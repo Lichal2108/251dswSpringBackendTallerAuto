@@ -1,0 +1,15 @@
+#spring.application.name=251dswSpringBackendConfig
+
+server:
+  port: 8888
+
+spring:
+  application:
+    name: 251dswSpringBackendConfig
+  profiles:
+    active: native
+  cloud:
+    config:
+      server:
+        native:
+          search-locations: classpath:/configurations
