@@ -6,10 +6,10 @@ spring:
   application:
     name: 251dswSpringBackendTallerVentas
   config:
-    import: 'optional:configserver:http://localhost:8888'
+    import: optional:configserver:http://localhost:8888
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://ep-long-mode-acef70ys-pooler.sa-east-1.aws.neon.tech:5432/neondswauto?sslmode=require
+    url: jdbc:postgresql://ep-long-mode-acef70ys-pooler.sa-east-1.aws.neon.tech:5432/tallerVentasDb?sslmode=require
     username: neondswauto_owner
     password: npg_6GMjSy5wiCxb
   jpa:
