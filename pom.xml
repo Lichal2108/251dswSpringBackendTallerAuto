@@ -85,6 +85,7 @@
 		<module>251dswSpringBackendConfig</module>
 		<module>251dswSpringBackendTallerAutomotriz</module>
 		<module>251dswSpringBackendTallerVentas</module>
+                <module>251dswSpringBackendOrdenServicio</module>
 	</modules>
 
 </project>
