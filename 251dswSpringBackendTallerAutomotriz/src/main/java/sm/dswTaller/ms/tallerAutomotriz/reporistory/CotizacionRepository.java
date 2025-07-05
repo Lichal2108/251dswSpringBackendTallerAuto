@@ -7,6 +7,10 @@ package sm.dswTaller.ms.tallerAutomotriz.reporistory;
 import sm.dswTaller.ms.tallerAutomotriz.model.Cotizacion;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+import sm.dswTaller.ms.tallerAutomotriz.utils.EstadoCotizacion;
+
+import java.time.LocalDateTime;
+import java.util.List;
 
 /**
  *
@@ -14,5 +18,10 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface CotizacionRepository extends JpaRepository<Cotizacion,Long>{
-    
+    List<Cotizacion> findByEstadoAndFechaExpiracionBefore(
+            EstadoCotizacion estado,
+            LocalDateTime fecha);
+
+    List<Cotizacion> findByEstado(EstadoCotizacion estado);
+
 }

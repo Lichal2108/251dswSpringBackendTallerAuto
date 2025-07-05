@@ -23,6 +23,7 @@ public class CotizacionMaterialResponse {
     private String nombre;
     private Integer stock;
     private Double precio;
+    private boolean stockDescontado;
 
     public static CotizacionMaterialResponse fromEntity(Material material) {
         return CotizacionMaterialResponse.builder()

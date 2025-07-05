@@ -4,7 +4,7 @@
  */
 package sm.dswTaller.ms.tallerAutomotriz.dto;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -20,7 +20,7 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class CotizacionRequest {
     private Long id;
-    private LocalDate fecha;
+    private LocalDateTime fecha;
     private Double total;
     private Integer idOst;
     

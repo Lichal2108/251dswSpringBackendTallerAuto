@@ -1,23 +1,15 @@
-
 package sm.dswTaller.ms.tallerAutomotriz.model;
 
 import java.util.List;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
-import java.time.LocalDate;
+
+import jakarta.persistence.*;
+
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import sm.dswTaller.ms.tallerAutomotriz.utils.EstadoCotizacion;
+import java.time.LocalDateTime;
 
 
 @Data // permite realizar codigo limpio
@@ -32,18 +24,39 @@ public class Cotizacion {
     @Column(name="id_cotizacion")
     private Long id;
 
-    private LocalDate fecha;
+    @Column(name = "fecha_creacion")
+    private LocalDateTime fecha;
     private Double total;
 
     @ManyToOne
     @JoinColumn(name = "id_ost")
     private Ost ost;
 
+    @Enumerated(EnumType.STRING)
+    @Builder.Default
+    private EstadoCotizacion estado = EstadoCotizacion.PENDIENTE;
+
+    @Column(name = "fecha_expiracion")
+    private LocalDateTime fechaExpiracion;
+
     /*@OneToMany(mappedBy = "cotizacion", cascade = CascadeType.ALL)
     private List<CotizacionMaterial> materiales;
 
     @OneToMany(mappedBy = "cotizacion", cascade = CascadeType.ALL)
-    private List<CotizacionServicio> servicios;*/    
-    
+    private List<CotizacionServicio> servicios;*/
+
+
+    public boolean expirada() {
+        return LocalDateTime.now().isAfter(fechaExpiracion);
+    }
+
+    /**
+     * Establece la fecha de expiración basada en la fecha de creación
+     */
+    public void establecerFechaExpiracion() {
+        if (fecha != null) {
+            this.fechaExpiracion = fecha.plusMinutes(15);
+        }
+    }
 
 }

@@ -4,15 +4,8 @@
  */
 package sm.dswTaller.ms.tallerAutomotriz.model;
 
-import jakarta.persistence.EmbeddedId;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.MapsId;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import jakarta.persistence.*;
+import lombok.*;
 
 
 @Entity
@@ -34,5 +27,13 @@ public class CotizacionMaterial {
     @JoinColumn(name = "material_id")
     private Material material;
 
-    private int cantidad;  
+    private int cantidad;
+
+    @Setter
+    @Getter
+    @Transient
+    @Builder.Default
+    private boolean stockDescontado = false;
+
+
 }

@@ -6,6 +6,7 @@ package sm.dswTaller.ms.tallerAutomotriz.dto;
 
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 import lombok.AllArgsConstructor;
@@ -21,9 +22,12 @@ import sm.dswTaller.ms.tallerAutomotriz.model.Ost;
 @AllArgsConstructor
 public class CotizacionResponse {
     private Long id;
-    private LocalDate fecha;
+    private LocalDateTime fecha;
     private Double total;
     private Ost ost;
+    private String estado;
+    private LocalDateTime fechaExpiracion;
+
     public static CotizacionResponse fromEntity(Cotizacion cotizacion) {
         return CotizacionResponse.builder()
                 .id(cotizacion.getId())

@@ -9,6 +9,7 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import sm.dswTaller.ms.tallerAutomotriz.model.Material;
+import sm.dswTaller.ms.tallerAutomotriz.utils.EstadoCotizacion;
 
 /**
  *
@@ -24,6 +25,9 @@ public class MaterialConCantidadResponse {
     private Integer stock;
     private Double precio;
     private Integer cantidad;
+    
+    @Builder.Default
+    private boolean stockDescontado = false;
 
     public static MaterialConCantidadResponse fromEntity(Material material, int cantidad) {
         return MaterialConCantidadResponse.builder()
@@ -32,7 +36,20 @@ public class MaterialConCantidadResponse {
                 .stock(material.getStock())
                 .precio(material.getPrecio())
                 .cantidad(cantidad)
+                .stockDescontado(false) // Por defecto no está descontado
                 .build();
-    }    
+    }
     
+    public static MaterialConCantidadResponse fromEntity(Material material, int cantidad, EstadoCotizacion estadoCotizacion) {
+        boolean stockDescontado = estadoCotizacion == EstadoCotizacion.PAGADO;
+        
+        return MaterialConCantidadResponse.builder()
+                .idMaterial(material.getId())
+                .nombre(material.getNombre())
+                .stock(material.getStock())
+                .precio(material.getPrecio())
+                .cantidad(cantidad)
+                .stockDescontado(stockDescontado)
+                .build();
+    }
 }

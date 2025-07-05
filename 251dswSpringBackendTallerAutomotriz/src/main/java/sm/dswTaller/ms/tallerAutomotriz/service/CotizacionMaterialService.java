@@ -120,10 +120,23 @@ public class CotizacionMaterialService {
     }
     public List<MaterialConCantidadResponse> obtenerMaterialesDeCotizacion(Long idCotizacion) {
         List<CotizacionMaterial> materiales = cotizacionMaterialRepo.findByCotizacionId(idCotizacion);
+        
+        // Obtener el estado de la cotización
+        Cotizacion cotizacion = cotizacionRepo.findById(idCotizacion)
+                .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
 
         return materiales.stream()
-                .map(cm -> MaterialConCantidadResponse.fromEntity(cm.getMaterial(), cm.getCantidad()))
+                .map(cm -> MaterialConCantidadResponse.fromEntity(
+                    cm.getMaterial(), 
+                    cm.getCantidad(), 
+                    cotizacion.getEstado()))
                 .toList();
     }
+
+
+    public Material guardarProducto(Material producto) {
+        return materialRepo.save(producto);
+    }
+
     
 }

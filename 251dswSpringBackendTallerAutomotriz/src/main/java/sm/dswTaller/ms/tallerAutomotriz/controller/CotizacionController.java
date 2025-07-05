@@ -34,6 +34,8 @@ import sm.dswTaller.ms.tallerAutomotriz.dto.AgregarMultiplesMaterialesRequest;
 import sm.dswTaller.ms.tallerAutomotriz.dto.CotizacionMultiplesMaterialesResponse;
 import sm.dswTaller.ms.tallerAutomotriz.dto.ActualizarTotalCotizacionRequest;
 import sm.dswTaller.ms.tallerAutomotriz.dto.MaterialConCantidadResponse;
+import sm.dswTaller.ms.tallerAutomotriz.reporistory.CotizacionRepository;
+import java.time.LocalDateTime;
 
 @RestController
 @RequestMapping("/api/v1/cotizaciones")
@@ -49,6 +51,9 @@ public class CotizacionController {
 
     @Autowired
     private CotizacionService cotizacionService;
+
+    @Autowired
+    private CotizacionRepository cotizacionRepository;
 
     @GetMapping
     public ResponseEntity<?> getCotizaciones() {
@@ -186,4 +191,126 @@ public class CotizacionController {
         List<MaterialConCantidadResponse> materiales = cotizacionMaterialService.obtenerMaterialesDeCotizacion(idCotizacion);
         return ResponseEntity.ok(materiales);
     }   
+
+    @PostMapping("/{idCotizacion}/pagar")
+    public ResponseEntity<?> pagarCotizacion(@PathVariable Long idCotizacion) {
+        logger.info("Pagando cotización ID: {}", idCotizacion);
+        
+        try {
+            CotizacionResponse response = cotizacionService.pagarCotizacion(idCotizacion);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error al pagar la cotización", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.builder()
+                            .message("Error al pagar la cotización: " + e.getMessage())
+                            .build());
+        }
+    }
+
+    @PostMapping("/{idCotizacion}/expirar")
+    public ResponseEntity<?> expirarCotizacion(@PathVariable Long idCotizacion) {
+        logger.info("Expirando cotización ID: {}", idCotizacion);
+        
+        try {
+            CotizacionResponse response = cotizacionService.expirarCotizacion(idCotizacion);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error al expirar la cotización", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.builder()
+                            .message("Error al expirar la cotización: " + e.getMessage())
+                            .build());
+        }
+    }
+
+    @PostMapping("/{idCotizacion}/cancelar")
+    public ResponseEntity<?> cancelarCotizacion(@PathVariable Long idCotizacion) {
+        logger.info("Cancelando cotización ID: {}", idCotizacion);
+        
+        try {
+            CotizacionResponse response = cotizacionService.cancelarCotizacion(idCotizacion);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error al cancelar la cotización", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.builder()
+                            .message("Error al cancelar la cotización: " + e.getMessage())
+                            .build());
+        }
+    }
+
+    @PostMapping("/{idCotizacion}/extender-tiempo")
+    public ResponseEntity<?> extenderTiempoExpiracion(@PathVariable Long idCotizacion) {
+        logger.info("Extendiendo tiempo de expiración para cotización ID: {}", idCotizacion);
+        
+        try {
+            CotizacionResponse response = cotizacionService.extenderTiempoExpiracion(idCotizacion);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error al extender el tiempo de expiración", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.builder()
+                            .message("Error al extender el tiempo de expiración: " + e.getMessage())
+                            .build());
+        }
+    }
+
+    @GetMapping("/{idCotizacion}/estado")
+    public ResponseEntity<?> obtenerEstadoCotizacion(@PathVariable Long idCotizacion) {
+        logger.info("Obteniendo estado de cotización ID: {}", idCotizacion);
+        
+        try {
+            // Buscar la cotización directamente en el repositorio para obtener información completa
+            var cotizacionOpt = cotizacionRepository.findById(idCotizacion);
+            
+            if (cotizacionOpt.isEmpty()) {
+                return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                        .body(ErrorResponse.builder()
+                                .message("Cotización no encontrada")
+                                .build());
+            }
+            
+            var cotizacionCompleta = cotizacionOpt.get();
+            CotizacionResponse cotizacion = CotizacionResponse.fromEntity(cotizacionCompleta);
+            List<MaterialConCantidadResponse> materiales = cotizacionMaterialService.obtenerMaterialesDeCotizacion(idCotizacion);
+            
+            // Calcular tiempo restante hasta expiración
+            long minutosRestantes = 0;
+            boolean expirada = false;
+            boolean proximaAExpirar = false;
+            
+            LocalDateTime fechaExpiracion = cotizacionCompleta.getFechaExpiracion();
+            if (fechaExpiracion != null) {
+                if (LocalDateTime.now().isAfter(fechaExpiracion)) {
+                    expirada = true;
+                    minutosRestantes = 0;
+                } else {
+                    minutosRestantes = java.time.Duration.between(LocalDateTime.now(), fechaExpiracion).toMinutes();
+                    proximaAExpirar = minutosRestantes <= 5 && minutosRestantes > 0;
+                }
+            }
+            
+            Map<String, Object> response = Map.of(
+                "cotizacion", cotizacion,
+                "materiales", materiales,
+                "totalMateriales", materiales.size(),
+                "materialesConStockDescontado", materiales.stream().filter(m -> m.isStockDescontado()).count(),
+                "tiempoExpiracion", Map.of(
+                    "minutosRestantes", minutosRestantes,
+                    "expirada", expirada,
+                    "proximaAExpirar", proximaAExpirar,
+                    "fechaExpiracion", fechaExpiracion
+                )
+            );
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error al obtener estado de la cotización", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.builder()
+                            .message("Error al obtener estado de la cotización: " + e.getMessage())
+                            .build());
+        }
+    }
 }

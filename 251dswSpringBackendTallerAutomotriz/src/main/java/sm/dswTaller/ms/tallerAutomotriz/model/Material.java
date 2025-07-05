@@ -8,11 +8,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Data
+@Entity
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
 @Table(name = "material")
-@Entity
+
 public class Material {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,5 +27,31 @@ public class Material {
     private Integer stock;
 
     @Column(name = "precio", nullable = false)
-    private Double precio;    
+    private Double precio;
+
+
+    public synchronized boolean reducirStock(int cantidad) {
+        if (stock >= cantidad) {
+            this.stock -= cantidad;
+            return true;
+        }
+        return false;
+    }
+
+    public synchronized void restaurarStock(int cantidad) {
+        this.stock += cantidad;
+    }
+
+    public synchronized void confirmarCompra(int cantidad) {
+        if (this.stock >= cantidad) {
+            this.stock -= cantidad;
+        }
+    }
+
+    public synchronized void liberarStock(int cantidad) {
+        this.restaurarStock(cantidad);
+    }
+
+
+
 }
