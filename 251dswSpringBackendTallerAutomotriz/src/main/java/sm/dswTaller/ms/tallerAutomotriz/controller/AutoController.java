@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sm.dswTaller.ms.tallerAutomotriz.dto.AutoDTO;
 import sm.dswTaller.ms.tallerAutomotriz.service.AutoService;
 import sm.dswTaller.ms.tallerAutomotriz.reporistory.PersonaRepository;
 import sm.dswTaller.ms.tallerAutomotriz.dto.AutoResponse;
@@ -35,7 +36,8 @@ public class AutoController {
     @Autowired
     PersonaRepository personaRepository;
     @GetMapping("/autos/persona/{idPersona}")
-    public List<AutoResponse> getAutosPorPersona(@PathVariable Integer idPersona) {
+    public List<AutoDTO> getAutosPorPersona(@PathVariable Integer idPersona) {
+        System.out.println("autitosss");
         return autoService.findByPersona(idPersona);
     }
     @PostMapping
@@ -86,6 +88,10 @@ public class AutoController {
         }
         return ResponseEntity.ok(autoResponse);
        
-    } 
-    
+    }
+    @GetMapping("/{id}")
+    public ResponseEntity<?> getAutoById(@PathVariable Integer id) {
+        AutoDTO dto = autoService.getAutoById(id);
+        return ResponseEntity.ok(dto);
+    }
 }

@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioMDTO;
 
 import sm.dswTaller.ms.tallerAutomotriz.service.UsuarioService;
 import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioResponse;
@@ -122,5 +123,11 @@ public class UsuarioController {
             return ResponseEntity.status(HttpStatus.NOT_FOUND)
                     .body(ErrorResponse.builder().message("usuario not found").build());
         return ResponseEntity.ok(usuarioResponse);
+    }
+    
+    @GetMapping("mini/{id}")
+    public ResponseEntity<?> getUsuarioMiniById(@PathVariable Long id){
+        UsuarioMDTO dto = usuarioService.getUsuarioMiniById(id);
+        return ResponseEntity.ok(dto);
     }
 }   

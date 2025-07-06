@@ -6,6 +6,8 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import sm.dswTaller.ms.tallerAutomotriz.dto.PersonaResponse;
+import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioMDTO;
 import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioRequest;
 import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioResponse;
 import sm.dswTaller.ms.tallerAutomotriz.model.Persona;
@@ -89,6 +91,16 @@ public class UsuarioService {
         return UsuarioResponse.fromEntity(result.get());
         
         
-    }    
+    }
+    
+    public UsuarioMDTO getUsuarioMiniById(Long id){
+        Usuario usuario = usuarioRepository.findById(id)
+        .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        Persona persona = usuario.getPersona();
+        return UsuarioMDTO.builder()
+            .idUsuario(usuario.getId())
+            .persona(PersonaResponse.fromEntity(persona))
+            .build();
+    }   
     
 }

@@ -30,7 +30,7 @@ import sm.dswTaller.ms.tallerAutomotriz.dto.InventarioRevisionDTO;
  * @author Ciro
  */
 @RestController
-@RequestMapping(path = "api/v1/ost")
+@RequestMapping(path = "api/v1/ost-taller")
 public class OstController {
     private final Logger logger=LoggerFactory.getLogger(this.getClass());
     @Autowired

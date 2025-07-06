@@ -58,7 +58,7 @@ spring:
           predicates:
             - Path=/api/v1/modelo/**
         - id: ost
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/ost/**
         - id: ost-tecnico

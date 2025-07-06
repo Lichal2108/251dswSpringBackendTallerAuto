@@ -22,7 +22,7 @@ public class OstRequestDTO{
     private String nivelGasolina;
     private Integer kilometraje;
     
-    private Long idAuto;
+    private Integer idAuto;
     private Long anio;
     private String placa;
     private Long idModelo;

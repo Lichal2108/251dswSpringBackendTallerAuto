@@ -17,6 +17,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import sm.dswTaller.ms.tallerAutomotriz.dto.AutoDTO;
 import sm.dswTaller.ms.tallerAutomotriz.service.PersonaService;
 import sm.dswTaller.ms.tallerAutomotriz.service.AutoService;
 import sm.dswTaller.ms.tallerAutomotriz.reporistory.PersonaRepository;
@@ -126,7 +127,16 @@ public class PersonaController {
     }
     
     @GetMapping("/autos/persona/{idPersona}")
-    public List<AutoResponse> getAutosPorPersona(@PathVariable Integer idPersona) {
+    public List<AutoDTO> getAutosPorPersona(@PathVariable Integer idPersona) {
         return autoService.findByPersona(idPersona);
+    }
+    
+    @GetMapping("/{id}")
+    public ResponseEntity<PersonaResponse> getPersonaById(@PathVariable Integer id) {
+        PersonaResponse persona = personaService.getPersonaById(id);
+        if (persona == null) {
+            return ResponseEntity.notFound().build();
+        }
+        return ResponseEntity.ok(persona);
     }
 }

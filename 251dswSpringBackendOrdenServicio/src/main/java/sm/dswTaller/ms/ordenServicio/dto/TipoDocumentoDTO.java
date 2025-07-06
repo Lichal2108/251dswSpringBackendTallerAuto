@@ -13,12 +13,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class PersonaDTO {
-    private Long idPersona;
-    private String nombres;
-    private String apellidoPaterno;
-    private String apellidoMaterno;
-    private String nroDocumento;
-    private TipoDocumentoDTO tipoDocumento;
-    private String telefono;
+public class TipoDocumentoDTO {
+    private Integer id;
+    private String tipoDoc;
 }

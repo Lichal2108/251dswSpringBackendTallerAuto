@@ -41,7 +41,7 @@ public class OstController {
     }
     @GetMapping("/mis-ost/{idUsuario}")
     public ResponseEntity<?> obtenerMisOst(@PathVariable Long idUsuario) {
-        List<OstResponseDTO> lista = ostService.obtenerOstPorCliente(idUsuario);
+        List<OstResponseDTO> lista = ostService.buscarOstPorIdPersona(idUsuario);
         return ResponseEntity.ok(lista);
     }
     

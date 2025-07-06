@@ -14,4 +14,6 @@ public interface AutoRepository extends JpaRepository<Auto, Integer> {
 
     public Auto findByPlaca(String placa);
     List<Auto> findByPersona_IdPersona(Integer idPersona);
+
+    public Object findByIdAuto(Long id);
 }

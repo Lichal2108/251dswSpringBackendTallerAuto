@@ -7,13 +7,15 @@ package sm.dswTaller.ms.ordenServicio.client;
 import org.springframework.cloud.openfeign.FeignClient;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import sm.dswTaller.ms.ordenServicio.configuration.PersonaFeignConfig;
 import sm.dswTaller.ms.ordenServicio.dto.PersonaDTO;
 
 /**
  *
  * @author Aldair
  */
-@FeignClient(name = "251dswSpringBackendTallerAutomotriz", url = "http://localhost:9090/api/v1/persona") // IP del microservicio Auto
+@FeignClient(name =  "251dswSpringBackendTallerAutomotriz", contextId = "personaClient",url = "http://localhost:8080",
+        configuration = PersonaFeignConfig.class) // IP del microservicio Auto
 public interface PersonaClient {
     @GetMapping("/api/v1/persona/{id}")
     PersonaDTO getPersonaById(@PathVariable Long id);

@@ -156,7 +156,7 @@ public class OstServiceImp implements OstService{
         AutoDTO autoDTO = autoClient.getAutoById(dto.getIdAuto());
         if (autoDTO == null) throw new RuntimeException("Auto no encontrado");
 
-        UsuarioDTO usuarioDTO = usuarioClient.getUsuarioById(dto.getIdRecepcionista());
+        UsuarioDTO usuarioDTO = usuarioClient.getUsuarioMiniById(dto.getIdRecepcionista());
         if (usuarioDTO == null) throw new RuntimeException("Usuario no encontrado");
 
         // 3. Recuperar OST existente
@@ -199,30 +199,26 @@ public class OstServiceImp implements OstService{
             return null;
         return buildResponse(result.get());
     }
-
+    
     @Override
-    public List<OstResponseDTO> obtenerOstPorCliente(Long idUsuario) {
-        // 1. Obtener el usuario desde el microservicio externo
-        UsuarioDTO usuario = usuarioClient.getUsuarioById(idUsuario);
-
-        // 2. Obtener el idPersona desde el UsuarioDTO
-        if (usuario == null || usuario.getPersona() == null) {
-            throw new RuntimeException("Usuario o persona no encontrados");
-        }
+    public List<OstResponseDTO> buscarOstPorIdPersona(Long idUsuario) {
+        UsuarioDTO usuario = usuarioClient.getUsuarioMiniById(idUsuario);
+        System.out.println("ost1");
         Long idPersona = usuario.getPersona().getIdPersona();
-
-        // 3. Buscar las OSTs por idPersona (asociado al auto)
-        List<Ost> osts = ostRepository.findByIdPersonaCliente(idPersona);
-
-        // 4. Convertir cada una con buildResponse
-        return osts.stream()
-                   .map(this::buildResponse)
-                   .collect(Collectors.toList());
+        System.out.println("ost2");
+        List<AutoDTO> autos = autoClient.listarAutosPorPersona(idPersona);
+        System.out.println("ost3");
+        List<Long> idsAuto = autos.stream().map(autoDTO -> autoDTO.getIdAuto()).toList();
+        System.out.println("rrr");
+        List<Ost> listaOst = ostRepository.findByAutoIn(idsAuto);
+        return listaOst.stream()
+                       .map(this::buildResponse)
+                       .collect(Collectors.toList());
     }
     
     @Override
     public List<OstResponseDTO> obtenerOstPorSupervisor(Long idSupervisor) {
-        List<Ost> osts = ostRepository.findBySupervisorId(idSupervisor);
+        List<Ost> osts = ostRepository.findBySupervisor(idSupervisor);
         return osts.stream()
                    .map(this::buildResponse)  // Usamos el método completo con FeignClients
                    .collect(Collectors.toList());
@@ -263,13 +259,13 @@ public class OstServiceImp implements OstService{
             // 1. Obtener AUTO
             AutoDTO auto = autoClient.getAutoById(ost.getAuto());
             // 2. Obtener PERSONA del auto
-            PersonaDTO persona = auto != null ? personaClient.getPersonaById(auto.getIdPersona()) : null;
+            PersonaDTO persona = auto != null ? personaClient.getPersonaById(auto.getPersona().getIdPersona()) : null;
             // 3. Obtener USUARIOS: recepcionista y supervisor
             UsuarioDTO recep = ost.getRecepcionista()!= null
-                ? usuarioClient.getUsuarioById(ost.getRecepcionista())
+                ? usuarioClient.getUsuarioMiniById(ost.getRecepcionista())
                 : null;
             UsuarioDTO superv = ost.getSupervisor() != null
-                ? usuarioClient.getUsuarioById(ost.getSupervisor())
+                ? usuarioClient.getUsuarioMiniById(ost.getSupervisor())
                 : null;
             // 4. Convertir a DTO
             return OstResponseDTO.fromEntity(ost, auto, persona, recep, superv);
