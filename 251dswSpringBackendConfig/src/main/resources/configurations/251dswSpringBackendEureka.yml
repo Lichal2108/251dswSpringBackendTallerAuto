@@ -1,0 +1,17 @@
+#spring.application.name=251dswSpringBackendEureka
+server:
+  port: 8761
+
+spring:
+  application:
+    name: 251dswSpringBackendEureka
+
+
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    register-with-eureka: false
+    fetch-registry: false
+    serverUrl:
+      defaultzone: http://${eureka.instance.hostname}:${server.port}/eureka/

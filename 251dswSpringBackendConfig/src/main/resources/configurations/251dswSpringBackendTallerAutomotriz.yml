@@ -1,0 +1,23 @@
+#spring.application.name=251dswSpringBackendTallerAutomotriz
+server:
+  port:
+    9090
+spring:
+  application:
+    name: 251dswSpringBackendTallerAutomotriz
+
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://ep-long-mode-acef70ys-pooler.sa-east-1.aws.neon.tech:5432/neondswauto?sslmode=require
+    username: neondswauto_owner
+    password: npg_6GMjSy5wiCxb
+  jpa:
+    hibernate:
+    #ddl-auto: create
+    #database-platform: org.hibernate.dialect.PostgreSQLDialect
+eureka:
+  instance:
+    hostname: localhost
+  client:
+    serviceUrl:
+      defaultzone: http://localhost:8761/eureka/
