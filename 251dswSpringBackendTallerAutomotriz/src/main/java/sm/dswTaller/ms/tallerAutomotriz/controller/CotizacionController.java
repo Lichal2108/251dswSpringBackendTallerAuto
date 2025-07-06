@@ -7,6 +7,7 @@ package sm.dswTaller.ms.tallerAutomotriz.controller;
 
 import java.util.List;
 import java.util.Map;
+import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -76,12 +77,30 @@ public class CotizacionController {
     @PostMapping
     public ResponseEntity<?> insertCotizacion(@RequestBody CotizacionRequest request) {
         logger.info("> insertCotizacion: " + request.toString());
+        
+        // Validaciones básicas
+        if (request == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ErrorResponse.builder().message("Request no puede ser nulo").build());
+        }
+        
+        if (request.getIdOst() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ErrorResponse.builder().message("idOst es requerido").build());
+        }
+        
+        if (request.getFecha() == null) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST)
+                    .body(ErrorResponse.builder().message("fecha es requerida").build());
+        }
+        
         CotizacionResponse response;
         try {
             response = cotizacionService.insertCotizacion(request);
         } catch (Exception e) {
             logger.error("Error inesperado al insertar cotizacion", e);
-            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                    .body(ErrorResponse.builder().message("Error interno: " + e.getMessage()).build());
         }
 
         if (response == null || response.getId() == null) {
@@ -145,10 +164,10 @@ public class CotizacionController {
 
         } catch (Exception e) {
             logger.error("Error al agregar materiales: {}", e.getMessage());
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("mensaje", "Error al procesar materiales: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ErrorResponse.builder()
-                            .message("Error al procesar materiales: " + e.getMessage())
-                            .build());
+                    .body(errorResponse);
         }
     }
 
@@ -161,11 +180,15 @@ public class CotizacionController {
                     request.getIdCotizacion(), request.getNuevoTotal()
             );
 
-            return ResponseEntity.ok(Map.of("mensaje", "Total actualizado correctamente"));
+            Map<String, String> successResponse = new HashMap<>();
+            successResponse.put("mensaje", "Total actualizado correctamente");
+            return ResponseEntity.ok(successResponse);
         } catch (Exception e) {
             logger.error("Error al actualizar el total de la cotización", e);
+            Map<String, String> errorResponse = new HashMap<>();
+            errorResponse.put("mensaje", "Error al actualizar el total: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(Map.of("mensaje", "Error al actualizar el total: " + e.getMessage()));
+                    .body(errorResponse);
         }
     }
     @GetMapping("/{idCotizacion}/servicios")
