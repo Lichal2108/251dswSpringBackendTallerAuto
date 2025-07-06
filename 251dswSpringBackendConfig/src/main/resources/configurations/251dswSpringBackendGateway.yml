@@ -1,0 +1,134 @@
+#spring.application.name=251dswSpringBackendGateway
+server:
+  port: 8080
+
+spring:
+  application:
+    name: 251dswSpringBackendGateway
+
+  cloud:
+    gateway:
+      discovery:
+        locator:
+          enabled: true
+      routes:
+        # Rutas para el microservicio de Taller Automotriz (v1)
+        - id: auth
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/auth/**
+        - id: auto
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/auto/**
+        - id: bitacora
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/bitacora/**
+        - id: categoria-item
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/categoria-item/**
+        - id: cotizaciones
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/cotizaciones/**
+        - id: direccion
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/direccion/**
+        - id: inventario-auto
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/inventario-auto/**
+        - id: item-inventario
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/item-inventario/**
+        - id: marca
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/marca/**
+        - id: materiales
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/materiales/**
+        - id: modelo
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/modelo/**
+        - id: ost
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/ost/**
+        - id: ost-tecnico
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/ost-tecnico/**
+        - id: persona
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/persona/**
+        - id: pregunta
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/pregunta/**
+        - id: servicios
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/servicios/**
+        - id: tecnico
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/tecnico/**
+        - id: tecnico-marca
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/tecnico-marca/**
+        - id: tipo-documento
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/tipoDocumento/**
+        - id: tipo-estado
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/tipo-estado/**
+        - id: tipo-solucion
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/tipoSolucion/**
+        - id: usuario
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/usuario/**
+        
+        # Rutas para el microservicio de Taller Ventas (v2)
+        - id: evaluacion
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/evaluacion/**
+        - id: preguntas-evaluacion
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/preguntasevaluacion/**
+        - id: recibo
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/recibo/**
+        - id: recibo-orden-evaluacion
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/recibo-orden-evaluacion/**
+        
+        # Rutas generales como fallback
+        - id: taller-general
+          uri: 'http://localhost:9090'
+          predicates:
+            - Path=/api/v1/**
+        - id: ventas-general
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/**
+eureka:
+  client:
+    register-with-eureka: false
