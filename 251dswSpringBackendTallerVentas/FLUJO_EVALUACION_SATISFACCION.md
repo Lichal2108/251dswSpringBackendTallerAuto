@@ -2,8 +2,6 @@
 
 ## Descripción General
 
-Este documento describe el flujo completo para la evaluación de satisfacción del cliente después de que se registra un recibo en el taller automotriz.
-
 ## Flujo del Proceso
 
 ### 1. Registro del Recibo
