@@ -52,11 +52,20 @@ public class Cotizacion {
 
     /**
      * Establece la fecha de expiración basada en la fecha de creación
+     * La expiración se establece a 5 días después de la creación
      */
     public void establecerFechaExpiracion() {
         if (fecha != null) {
-            this.fechaExpiracion = fecha.plusMinutes(15);
+            this.fechaExpiracion = fecha.plusDays(5);
         }
+    }
+
+    /**
+     * Establece la fecha de expiración basada en la fecha actual
+     * Se usa para extender el tiempo de expiración
+     */
+    public void establecerFechaExpiracionDesdeAhora() {
+        this.fechaExpiracion = LocalDateTime.now().plusDays(5);
     }
 
 }

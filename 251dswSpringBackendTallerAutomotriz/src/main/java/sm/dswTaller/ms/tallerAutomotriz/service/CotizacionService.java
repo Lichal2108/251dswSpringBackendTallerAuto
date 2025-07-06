@@ -108,8 +108,8 @@ public class CotizacionService {
         
         cotizacion.setTotal(nuevoTotal);
         
-        // Extender el tiempo de expiración por 15 minutos más desde el momento actual
-        cotizacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
+        // Extender el tiempo de expiración por 5 días más desde el momento actual
+        cotizacion.establecerFechaExpiracionDesdeAhora();
 
         cotizacion = cotizacionRepository.save(cotizacion);
 
@@ -144,9 +144,9 @@ public class CotizacionService {
             materialRepository.save(material);
         }
 
-        // Cambiar estado a PAGADO y extender tiempo de expiración
+        // Cambiar estado a PAGADO y establecer fecha de expiración a null para que no expire automáticamente
         cotizacion.setEstado(EstadoCotizacion.PAGADO);
-        cotizacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(15)); // 15 minutos adicionales para cotizaciones pagadas
+        cotizacion.setFechaExpiracion(null); // Las cotizaciones pagadas no expiran automáticamente
         cotizacion = cotizacionRepository.save(cotizacion);
 
         // Crear recibo en el microservicio de ventas
@@ -380,8 +380,8 @@ public class CotizacionService {
             throw new RuntimeException("Solo se puede extender el tiempo de cotizaciones en estado PENDIENTE");
         }
 
-        // Extender el tiempo de expiración por 15 minutos más
-        cotizacion.setFechaExpiracion(LocalDateTime.now().plusMinutes(15));
+        // Extender el tiempo de expiración por 5 días más
+        cotizacion.establecerFechaExpiracionDesdeAhora();
         cotizacion = cotizacionRepository.save(cotizacion);
 
         return CotizacionResponse.fromEntity(cotizacion);

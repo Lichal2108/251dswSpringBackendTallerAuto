@@ -119,6 +119,10 @@ spring:
           uri: 'http://localhost:8091'
           predicates:
             - Path=/api/v2/recibo-orden-evaluacion/**
+        - id: encuesta-satisfaccion
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/encuesta-satisfaccion/**
         
         # Rutas generales como fallback
         - id: taller-general

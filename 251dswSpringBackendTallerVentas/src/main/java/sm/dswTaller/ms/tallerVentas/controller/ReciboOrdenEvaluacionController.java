@@ -31,18 +31,6 @@ public class ReciboOrdenEvaluacionController {
                 .orElse(ResponseEntity.notFound().build());
     }
     
-    @PostMapping
-    public ResponseEntity<ReciboOrdenEvaluacionResponseDTO> createReciboOrdenEvaluacion(@RequestBody ReciboOrdenEvaluacionRequestDTO request) {
-        ReciboOrdenEvaluacionResponseDTO createdReciboOrdenEvaluacion = reciboOrdenEvaluacionService.createReciboOrdenEvaluacion(request);
-        return ResponseEntity.status(HttpStatus.CREATED).body(createdReciboOrdenEvaluacion);
-    }
-    
-    @PutMapping("/{id}")
-    public ResponseEntity<ReciboOrdenEvaluacionResponseDTO> updateReciboOrdenEvaluacion(@PathVariable Long id, @RequestBody ReciboOrdenEvaluacionRequestDTO request) {
-        Optional<ReciboOrdenEvaluacionResponseDTO> updatedReciboOrdenEvaluacion = reciboOrdenEvaluacionService.updateReciboOrdenEvaluacion(id, request);
-        return updatedReciboOrdenEvaluacion.map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
-    }
     
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteReciboOrdenEvaluacion(@PathVariable Long id) {

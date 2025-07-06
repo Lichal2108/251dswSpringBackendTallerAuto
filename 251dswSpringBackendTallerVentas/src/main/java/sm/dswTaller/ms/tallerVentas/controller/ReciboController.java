@@ -52,4 +52,19 @@ public class ReciboController {
         }
         return ResponseEntity.notFound().build();
     }
+    
+    @PutMapping("/{id}/marcar-para-evaluacion")
+    public ResponseEntity<Void> marcarReciboParaEvaluacion(@PathVariable Long id) {
+        boolean marcado = reciboService.marcarReciboParaEvaluacion(id);
+        if (marcado) {
+            return ResponseEntity.ok().build();
+        }
+        return ResponseEntity.notFound().build();
+    }
+    
+    @GetMapping("/{id}/listo-para-evaluacion")
+    public ResponseEntity<Boolean> verificarReciboListoParaEvaluacion(@PathVariable Long id) {
+        boolean listo = reciboService.verificarReciboListoParaEvaluacion(id);
+        return ResponseEntity.ok(listo);
+    }
 }

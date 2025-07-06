@@ -36,6 +36,7 @@ import sm.dswTaller.ms.tallerAutomotriz.dto.ActualizarTotalCotizacionRequest;
 import sm.dswTaller.ms.tallerAutomotriz.dto.MaterialConCantidadResponse;
 import sm.dswTaller.ms.tallerAutomotriz.reporistory.CotizacionRepository;
 import java.time.LocalDateTime;
+import sm.dswTaller.ms.tallerAutomotriz.utils.EstadoCotizacion;
 
 @RestController
 @RequestMapping("/api/v1/cotizaciones")
@@ -281,13 +282,20 @@ public class CotizacionController {
             boolean proximaAExpirar = false;
             
             LocalDateTime fechaExpiracion = cotizacionCompleta.getFechaExpiracion();
-            if (fechaExpiracion != null) {
+            
+            // Si la cotización está pagada, no tiene fecha de expiración automática
+            if (cotizacionCompleta.getEstado() == EstadoCotizacion.PAGADO) {
+                expirada = false;
+                proximaAExpirar = false;
+                minutosRestantes = -1; // Indica que no expira automáticamente
+            } else if (fechaExpiracion != null) {
                 if (LocalDateTime.now().isAfter(fechaExpiracion)) {
                     expirada = true;
                     minutosRestantes = 0;
                 } else {
                     minutosRestantes = java.time.Duration.between(LocalDateTime.now(), fechaExpiracion).toMinutes();
-                    proximaAExpirar = minutosRestantes <= 5 && minutosRestantes > 0;
+                    // Para cotizaciones de 5 días, mostrar alerta cuando falte 1 día o menos
+                    proximaAExpirar = minutosRestantes <= 1440 && minutosRestantes > 0; // 1440 minutos = 24 horas
                 }
             }
             

@@ -32,9 +32,9 @@ public class ExpiracionCotizacionWorker {
 
     /**
      * Verifica y expira cotizaciones pendientes que han superado su tiempo de expiración
-     * Se ejecuta cada minuto
+     * Se ejecuta cada 5 minutos (reducido de 1 minuto para optimizar rendimiento)
      */
-    @Scheduled(fixedRate = 60000) // 60000 ms = 1 minuto
+    @Scheduled(fixedRate = 300000) // 300000 ms = 5 minutos
     @Transactional
     public void verificarCotizacionesExpiradas() {
         List<Cotizacion> cotizacionesExpiradas = cotizacionRepo.findByEstadoAndFechaExpiracionBefore(
@@ -57,16 +57,19 @@ public class ExpiracionCotizacionWorker {
 
     /**
      * Verifica cotizaciones pagadas que han expirado y libera el stock
-     * Se ejecuta cada 5 minutos
+     * NOTA: Las cotizaciones pagadas ya no expiran automáticamente, este método se mantiene
+     * por compatibilidad pero no se ejecutará automáticamente
      */
     @Scheduled(fixedRate = 300000) // 300000 ms = 5 minutos
     @Transactional
     public void verificarCotizacionesPagadasExpiradas() {
+        // Las cotizaciones pagadas ya no expiran automáticamente, por lo que este método
+        // solo procesará cotizaciones que fueron pagadas antes de este cambio
         List<Cotizacion> cotizacionesPagadasExpiradas = cotizacionRepo.findByEstadoAndFechaExpiracionBefore(
                 EstadoCotizacion.PAGADO, LocalDateTime.now());
         
         if (!cotizacionesPagadasExpiradas.isEmpty()) {
-            System.out.println("Encontradas " + cotizacionesPagadasExpiradas.size() + " cotizaciones pagadas expiradas");
+            System.out.println("Encontradas " + cotizacionesPagadasExpiradas.size() + " cotizaciones pagadas expiradas (legacy)");
         }
         
         for (Cotizacion cotizacion : cotizacionesPagadasExpiradas) {
@@ -86,22 +89,28 @@ public class ExpiracionCotizacionWorker {
     }
 
     /**
-     * Verifica cotizaciones próximas a expirar (5 minutos antes) y envía alertas
-     * Se ejecuta cada 2 minutos
+     * Verifica cotizaciones próximas a expirar (1 día antes) y envía alertas
+     * Se ejecuta cada 30 minutos
      */
-    @Scheduled(fixedRate = 120000) // 120000 ms = 2 minutos
+    @Scheduled(fixedRate = 1800000) // 1800000 ms = 30 minutos
     @Transactional
     public void verificarCotizacionesProximasAExpirar() {
-        LocalDateTime cincoMinutosDespues = LocalDateTime.now().plusMinutes(5);
+        LocalDateTime unDiaDespues = LocalDateTime.now().plusDays(1);
         List<Cotizacion> cotizacionesProximas = cotizacionRepo.findByEstadoAndFechaExpiracionBefore(
-                EstadoCotizacion.PENDIENTE, cincoMinutosDespues);
+                EstadoCotizacion.PENDIENTE, unDiaDespues);
         
         for (Cotizacion cotizacion : cotizacionesProximas) {
-            if (cotizacion.getFechaExpiracion().isAfter(LocalDateTime.now())) {
+            if (cotizacion.getFechaExpiracion() != null && cotizacion.getFechaExpiracion().isAfter(LocalDateTime.now())) {
                 // Solo mostrar alertas para cotizaciones que aún no han expirado
-                long minutosRestantes = java.time.Duration.between(LocalDateTime.now(), cotizacion.getFechaExpiracion()).toMinutes();
-                if (minutosRestantes <= 5 && minutosRestantes > 0) {
-                    System.out.println("⚠️ ALERTA: Cotización " + cotizacion.getId() + " expira en " + minutosRestantes + " minutos");
+                long diasRestantes = java.time.Duration.between(LocalDateTime.now(), cotizacion.getFechaExpiracion()).toDays();
+                long horasRestantes = java.time.Duration.between(LocalDateTime.now(), cotizacion.getFechaExpiracion()).toHours() % 24;
+                
+                if (diasRestantes <= 1 && diasRestantes >= 0) {
+                    if (diasRestantes == 0 && horasRestantes <= 24) {
+                        System.out.println("⚠️ ALERTA: Cotización " + cotizacion.getId() + " expira en " + horasRestantes + " horas");
+                    } else if (diasRestantes == 1) {
+                        System.out.println("⚠️ ALERTA: Cotización " + cotizacion.getId() + " expira en " + diasRestantes + " día");
+                    }
                 }
             }
         }

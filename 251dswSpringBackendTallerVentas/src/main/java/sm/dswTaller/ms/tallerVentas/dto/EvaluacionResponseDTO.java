@@ -9,5 +9,8 @@ import lombok.NoArgsConstructor;
 @AllArgsConstructor
 public class EvaluacionResponseDTO {
     private Long idEvaluacion;
+    private Long idPregunta;
+    private String pregunta;
     private Integer puntajeSatisfaccion;
+    private String comentario;
 } 

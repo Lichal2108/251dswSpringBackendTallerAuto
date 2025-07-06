@@ -146,6 +146,22 @@ public class ReciboService {
         return false;
     }
     
+    public boolean marcarReciboParaEvaluacion(Long id) {
+        return reciboRepository.findById(id)
+                .map(recibo -> {
+                    recibo.setEstadoRecibo("LISTO_PARA_EVALUACION");
+                    reciboRepository.save(recibo);
+                    return true;
+                })
+                .orElse(false);
+    }
+    
+    public boolean verificarReciboListoParaEvaluacion(Long id) {
+        return reciboRepository.findById(id)
+                .map(recibo -> "LISTO_PARA_EVALUACION".equals(recibo.getEstadoRecibo()))
+                .orElse(false);
+    }
+    
     private ReciboResponseDTO convertToResponse(Recibo recibo) {
         List<MaterialDetalleDTO> materiales = null;
         List<ServicioDetalleDTO> servicios = null;
