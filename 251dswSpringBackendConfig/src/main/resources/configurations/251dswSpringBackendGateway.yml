@@ -26,7 +26,7 @@ spring:
           predicates:
             - Path=/api/v1/bitacora/**
         - id: categoria-item
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/categoria-item/**
         - id: cotizaciones
@@ -38,11 +38,11 @@ spring:
           predicates:
             - Path=/api/v1/direccion/**
         - id: inventario-auto
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/inventario-auto/**
         - id: item-inventario
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/item-inventario/**
         - id: marca
@@ -70,7 +70,7 @@ spring:
           predicates:
             - Path=/api/v1/persona/**
         - id: pregunta
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/pregunta/**
         - id: servicios

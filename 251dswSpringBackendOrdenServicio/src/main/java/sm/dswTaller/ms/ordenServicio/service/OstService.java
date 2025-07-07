@@ -14,7 +14,7 @@ public interface OstService {
     OstResponseDTO insertOst(OstRequestDTO dto);
     OstResponseDTO updateOst(OstRequestDTO dto);
     OstResponseDTO findOst(int idOst);
-    void deleteOst(int id);
+    void deleteOst(Long id);
     List<OstResponseDTO> buscarOstPorIdPersona(Long idUsuario);
     List<OstResponseDTO> obtenerOstPorSupervisor(Long idSupervisor);
     //void actualizarInventarioYRevision(Integer idOst, InventarioRevisionDTO dto);

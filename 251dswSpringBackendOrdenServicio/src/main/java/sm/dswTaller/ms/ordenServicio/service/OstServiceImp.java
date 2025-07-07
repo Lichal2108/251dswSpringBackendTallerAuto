@@ -20,6 +20,7 @@ import sm.dswTaller.ms.ordenServicio.model.Direccion;
 import sm.dswTaller.ms.ordenServicio.model.Ost;
 import sm.dswTaller.ms.ordenServicio.model.TipoEstado;
 import sm.dswTaller.ms.ordenServicio.repository.DireccionRepository;
+import sm.dswTaller.ms.ordenServicio.repository.OrdenPreguntaRepository;
 import sm.dswTaller.ms.ordenServicio.repository.OstRepository;
 import sm.dswTaller.ms.ordenServicio.repository.TipoEstadoRepository;
 
@@ -40,11 +41,9 @@ public class OstServiceImp implements OstService{
     
     @Autowired
     private DireccionRepository direccionRepository;
-    /*
-    
     
     @Autowired private OrdenPreguntaRepository ordenPreguntaRepo;
-    
+    /*
     @Autowired
     private ItemInventarioRepository itemInventarioRepository;
     
@@ -181,16 +180,13 @@ public class OstServiceImp implements OstService{
     
     @Transactional
     @Override
-    public void deleteOst(int id) {
-        /*        if (!ostRepository.existsById(id)) {
-        throw new RuntimeException("Ost no encontrado");
+    public void deleteOst(Long id) {
+        if (!ostRepository.existsById(id)) {
+            throw new RuntimeException("OST no encontrada con ID: " + id);
         }
-        
-        // Eliminar las relaciones en orden_pregunta
-        ordenPreguntaRepo.deleteByIdIdOst(id);
-        
-        // Luego eliminar la OST
-        ostRepository.deleteById(id);*/
+
+        ordenPreguntaRepo.deleteByIdIdOst(id);  // Borra relaciones
+        ostRepository.deleteById(id);          // Borra la OST
     }
     
     public OstResponseDTO findOst(Long id){
@@ -203,13 +199,13 @@ public class OstServiceImp implements OstService{
     @Override
     public List<OstResponseDTO> buscarOstPorIdPersona(Long idUsuario) {
         UsuarioDTO usuario = usuarioClient.getUsuarioMiniById(idUsuario);
-        System.out.println("ost1");
+        //System.out.println("ost1");
         Long idPersona = usuario.getPersona().getIdPersona();
-        System.out.println("ost2");
+        //System.out.println("ost2");
         List<AutoDTO> autos = autoClient.listarAutosPorPersona(idPersona);
-        System.out.println("ost3");
+        //System.out.println("ost3");
         List<Long> idsAuto = autos.stream().map(autoDTO -> autoDTO.getIdAuto()).toList();
-        System.out.println("rrr");
+        //System.out.println("rrr");
         List<Ost> listaOst = ostRepository.findByAutoIn(idsAuto);
         return listaOst.stream()
                        .map(this::buildResponse)

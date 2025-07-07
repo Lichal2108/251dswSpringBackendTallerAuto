@@ -84,9 +84,13 @@ public class OstController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOst(@PathVariable int id) {
-        ostService.deleteOst(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteOst(@PathVariable Long id) {
+        try {
+            ostService.deleteOst(id);
+            return ResponseEntity.ok("OST eliminada correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     /*    @PutMapping("/actualizar-inventario/{idOst}")
     public ResponseEntity<?> actualizarInventario(@PathVariable Integer idOst,
