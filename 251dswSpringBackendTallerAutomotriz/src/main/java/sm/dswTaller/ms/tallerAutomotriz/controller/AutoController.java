@@ -36,7 +36,7 @@ public class AutoController {
     @Autowired
     PersonaRepository personaRepository;
     @GetMapping("/autos/persona/{idPersona}")
-    public List<AutoDTO> getAutosPorPersona(@PathVariable Integer idPersona) {
+    public List<AutoResponse> getAutosPorPersona(@PathVariable Integer idPersona) {
         System.out.println("autitosss");
         return autoService.findByPersona(idPersona);
     }

@@ -12,16 +12,21 @@ import sm.dswTaller.ms.ordenServicio.client.PersonaClient;
 import sm.dswTaller.ms.ordenServicio.client.UsuarioClient;
 import sm.dswTaller.ms.ordenServicio.dto.AutoDTO;
 import sm.dswTaller.ms.ordenServicio.dto.InventarioByOstDTO;
+import sm.dswTaller.ms.ordenServicio.dto.OstMsResponseDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstRequestDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstResponseDTO;
 import sm.dswTaller.ms.ordenServicio.dto.PersonaDTO;
 import sm.dswTaller.ms.ordenServicio.dto.UsuarioDTO;
 import sm.dswTaller.ms.ordenServicio.model.Direccion;
+import sm.dswTaller.ms.ordenServicio.model.OrdenPregunta;
+import sm.dswTaller.ms.ordenServicio.model.OrdenPreguntaPK;
 import sm.dswTaller.ms.ordenServicio.model.Ost;
+import sm.dswTaller.ms.ordenServicio.model.Pregunta;
 import sm.dswTaller.ms.ordenServicio.model.TipoEstado;
 import sm.dswTaller.ms.ordenServicio.repository.DireccionRepository;
 import sm.dswTaller.ms.ordenServicio.repository.OrdenPreguntaRepository;
 import sm.dswTaller.ms.ordenServicio.repository.OstRepository;
+import sm.dswTaller.ms.ordenServicio.repository.PreguntaRepository;
 import sm.dswTaller.ms.ordenServicio.repository.TipoEstadoRepository;
 
 /**
@@ -43,6 +48,8 @@ public class OstServiceImp implements OstService{
     private DireccionRepository direccionRepository;
     
     @Autowired private OrdenPreguntaRepository ordenPreguntaRepo;
+    
+    @Autowired private PreguntaRepository preguntaRepository;
     /*
     @Autowired
     private ItemInventarioRepository itemInventarioRepository;
@@ -273,7 +280,46 @@ public class OstServiceImp implements OstService{
     }
 
     @Override
-    public OstResponseDTO insertOst(OstRequestDTO dto) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public OstMsResponseDTO insertOst(OstRequestDTO dto) {
+        // Validar existencia de Estado
+        TipoEstado tipoEstado = tipoEstadoRepository.findById(dto.getIdEstado())
+            .orElseThrow(() -> new RuntimeException("Estado no encontrado"));
+
+        // Validar existencia de Dirección
+        Direccion direccion = direccionRepository.findById(dto.getIdDireccion())
+            .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+
+        // No se valida Auto, Recepcionista ni Supervisor, solo se guardan los IDs
+        Ost ost = Ost.builder()
+            .fecha(dto.getFecha())
+            .fechaRevision(dto.getFechaRevision())
+            .hora(dto.getHora())
+            .nivelGasolina(dto.getNivelGasolina())
+            .kilometraje(dto.getKilometraje())
+            .direccion(direccion)
+            .estado(tipoEstado)
+            .auto(dto.getIdAuto()) // Se guarda el ID directo
+            .recepcionista(dto.getIdRecepcionista())
+            .supervisor(dto.getIdSupervisor())
+            .build();
+
+        ost = ostRepository.save(ost);
+
+        // Guardar preguntas relacionadas (si hay)
+        for (Integer idPregunta : dto.getPreguntas()) {
+            Pregunta pregunta = preguntaRepository.findById(idPregunta)
+                .orElseThrow(() -> new RuntimeException("Pregunta no encontrada: ID " + idPregunta));
+
+            ordenPreguntaRepo.save(
+                OrdenPregunta.builder()
+                    .id(new OrdenPreguntaPK(ost.getIdOst(), idPregunta))
+                    .ost(ost)
+                    .pregunta(pregunta)
+                    .build()
+            );
+        }
+
+        return OstMsResponseDTO.fromEntity(ost);
     }
+
 }

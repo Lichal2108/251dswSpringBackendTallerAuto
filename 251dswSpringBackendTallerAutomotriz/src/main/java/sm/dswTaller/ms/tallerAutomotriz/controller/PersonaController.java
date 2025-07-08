@@ -127,7 +127,7 @@ public class PersonaController {
     }
     
     @GetMapping("/autos/persona/{idPersona}")
-    public List<AutoDTO> getAutosPorPersona(@PathVariable Integer idPersona) {
+    public List<AutoResponse> getAutosPorPersona(@PathVariable Integer idPersona) {
         return autoService.findByPersona(idPersona);
     }
     

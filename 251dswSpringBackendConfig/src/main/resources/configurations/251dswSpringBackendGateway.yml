@@ -34,7 +34,7 @@ spring:
           predicates:
             - Path=/api/v1/cotizaciones/**
         - id: direccion
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/direccion/**
         - id: inventario-auto
@@ -62,7 +62,7 @@ spring:
           predicates:
             - Path=/api/v1/ost/**
         - id: ost-tecnico
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/ost-tecnico/**
         - id: persona
@@ -90,7 +90,7 @@ spring:
           predicates:
             - Path=/api/v1/tipoDocumento/**
         - id: tipo-estado
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/tipo-estado/**
         - id: tipo-solucion

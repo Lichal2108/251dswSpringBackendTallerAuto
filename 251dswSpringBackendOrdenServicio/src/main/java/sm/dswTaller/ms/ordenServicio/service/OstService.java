@@ -2,6 +2,7 @@
 package sm.dswTaller.ms.ordenServicio.service;
 
 import java.util.List;
+import sm.dswTaller.ms.ordenServicio.dto.OstMsResponseDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstRequestDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstResponseDTO;
 
@@ -11,7 +12,7 @@ import sm.dswTaller.ms.ordenServicio.dto.OstResponseDTO;
  */
 public interface OstService {
     List<OstResponseDTO> listOsts();
-    OstResponseDTO insertOst(OstRequestDTO dto);
+    OstMsResponseDTO insertOst(OstRequestDTO dto);
     OstResponseDTO updateOst(OstRequestDTO dto);
     OstResponseDTO findOst(int idOst);
     void deleteOst(Long id);

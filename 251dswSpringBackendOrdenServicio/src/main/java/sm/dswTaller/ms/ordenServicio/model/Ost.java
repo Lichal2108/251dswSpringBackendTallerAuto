@@ -50,7 +50,7 @@ public class Ost {
     private TipoEstado estado;
     
     @Column(name = "id_auto")
-    private Integer auto;
+    private Long auto;
     
     @Column(name = "id_recepcionista")
     private Long recepcionista;

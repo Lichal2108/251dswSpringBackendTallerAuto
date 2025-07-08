@@ -18,7 +18,7 @@ import sm.dswTaller.ms.ordenServicio.dto.AutoRequestDTO;
 public interface AutoClient {
 
     @GetMapping("/api/v1/auto/{id}")
-    AutoDTO getAutoById(@PathVariable Integer id);
+    AutoDTO getAutoById(@PathVariable Long id);
     
     @GetMapping("/api/v1/auto/placa/{placa}")
     AutoDTO getAutoByPlaca(@PathVariable String placa);

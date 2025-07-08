@@ -11,14 +11,10 @@ import lombok.NoArgsConstructor;
  * @author Aldair
  */
 @Data
-@Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AutoDTO {
-    private Long idAuto;
-    private String placa;
-    private String modelo;
-    private Integer anio;
-    private String color;
-    private PersonaDTO persona;
+@Builder
+public class TipoEstadoDTO {
+    private int id;
+    private String estado;
 }

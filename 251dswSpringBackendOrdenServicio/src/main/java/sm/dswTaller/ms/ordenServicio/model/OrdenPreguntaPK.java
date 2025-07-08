@@ -15,7 +15,7 @@ import lombok.NoArgsConstructor;
 public class OrdenPreguntaPK implements Serializable {
     
     @Column(name = "id_ost")       // Mapea al nombre exacto de la columna
-    private Integer idOst;
+    private Long idOst;
 
     @Column(name = "id_pregunta")  // Mapea al nombre exacto de la columna
     private Integer idPregunta;
