@@ -29,7 +29,7 @@ public class Auto {
     @Id
     @GeneratedValue(strategy =GenerationType.IDENTITY )
     @Column(name="id_auto")
-    private int idAuto;
+    private Long idAuto;
     
     private String placa;
     

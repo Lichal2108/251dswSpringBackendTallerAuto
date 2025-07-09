@@ -2,14 +2,13 @@
  * Click nbfs://nbhost/SystemFileSystem/Templates/Licenses/license-default.txt to change this license
  * Click nbfs://nbhost/SystemFileSystem/Templates/Classes/Class.java to edit this template
  */
-package sm.dswTaller.ms.tallerAutomotriz.dto;
+package sm.dswTaller.ms.ordenServicio.dto;
 
+import java.time.LocalDateTime;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import sm.dswTaller.ms.tallerAutomotriz.model.Modelo;
-import sm.dswTaller.ms.tallerAutomotriz.model.Persona;
 
 /**
  *
@@ -19,11 +18,10 @@ import sm.dswTaller.ms.tallerAutomotriz.model.Persona;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AutoDTO {
-    private Long idAuto;
-    private String placa;
-    private String modelo;
-    private Integer anio;
-    private String color;
-    private Persona persona;
+public class EvidenciaTecnicaDTO {
+    private Long id;
+    private String nombreArchivo;
+    private String url;
+    private String descripcion;
+    private LocalDateTime fecha;
 }

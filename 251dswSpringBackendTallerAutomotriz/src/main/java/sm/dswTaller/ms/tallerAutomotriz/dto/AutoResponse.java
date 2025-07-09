@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AutoResponse {
-    private Integer idAuto;
+    private Long idAuto;
     private String placa;
     private Modelo modelo;
     private Integer anio;

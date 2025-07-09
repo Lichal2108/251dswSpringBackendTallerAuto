@@ -82,11 +82,11 @@ public class AutoService {
         return AutoResponse.fromEntity(auto);
     
     }
-    public void deleteAuto(Integer id){
+    public void deleteAuto(Long id){
         autoRepository.deleteById(id);
         
     }
-    public AutoResponse findAuto(Integer id){
+    public AutoResponse findAuto(Long id){
         Optional<Auto> result=autoRepository.findById(id);
         if(!result.isPresent())
             return null;
@@ -95,7 +95,7 @@ public class AutoService {
         
     }  
 
-    public AutoDTO getAutoById(Integer id) {
+    public AutoDTO getAutoById(Long id) {
         Optional<Auto> auto = autoRepository.findById(id);
         if(!auto.isPresent())
             return null;

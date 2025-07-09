@@ -24,7 +24,7 @@ public class ReciboRequestDTO {
     private Integer idOst;
     
     // Información del vehículo
-    private Integer idAuto;
+    private Long idAuto;
     private String placaAuto;
     private String marcaAuto;
     private String modeloAuto;

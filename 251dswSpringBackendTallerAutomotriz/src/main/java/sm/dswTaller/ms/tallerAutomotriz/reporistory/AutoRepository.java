@@ -10,7 +10,7 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 
 @Repository
-public interface AutoRepository extends JpaRepository<Auto, Integer> {
+public interface AutoRepository extends JpaRepository<Auto, Long> {
 
     public Auto findByPlaca(String placa);
     List<Auto> findByPersona_IdPersona(Integer idPersona);

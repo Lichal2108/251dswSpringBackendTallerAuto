@@ -4,9 +4,11 @@
  */
 package sm.dswTaller.ms.ordenServicio.repository;
 
+import java.util.List;
 import org.springframework.data.jpa.repository.JpaRepository;
 import sm.dswTaller.ms.ordenServicio.model.EvidenciaTecnica;
 import sm.dswTaller.ms.ordenServicio.model.OstTecnico;
+import sm.dswTaller.ms.ordenServicio.model.OstTecnicoId;
 
 /**
  *
@@ -15,4 +17,6 @@ import sm.dswTaller.ms.ordenServicio.model.OstTecnico;
 public interface EvidenciaTecnicaRepository extends JpaRepository<EvidenciaTecnica, Long> {
 
     public boolean existsByOstTecnico(OstTecnico relacion);
+
+    public List<EvidenciaTecnica> findByOstTecnico_Id(OstTecnicoId id);
 }

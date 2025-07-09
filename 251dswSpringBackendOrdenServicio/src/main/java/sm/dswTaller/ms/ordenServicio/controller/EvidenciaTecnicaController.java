@@ -4,15 +4,19 @@
  */
 package sm.dswTaller.ms.ordenServicio.controller;
 
+import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 import sm.dswTaller.ms.ordenServicio.dto.EvidenciaRequestDTO;
+import sm.dswTaller.ms.ordenServicio.dto.EvidenciaTecnicaDTO;
 import sm.dswTaller.ms.ordenServicio.service.EvidenciaTecnicaService;
 
 /**
@@ -25,27 +29,36 @@ public class EvidenciaTecnicaController {
 
     @Autowired private EvidenciaTecnicaService evidenciaService;
 
-@PostMapping("/subir")
-public ResponseEntity<?> subirEvidencia(
-    @RequestParam("archivo") MultipartFile archivo,
-    @RequestParam("idOst") Long idOst,
-    @RequestParam("idTecnico") Long idTecnico,
-    @RequestParam("descripcion") String descripcion
-) {
-    try {
-        EvidenciaRequestDTO dto = new EvidenciaRequestDTO();
-        dto.setIdOst(idOst);
-        dto.setIdTecnico(idTecnico);
-        dto.setDescripcion(descripcion);
+    @PostMapping("/subir")
+    public ResponseEntity<?> subirEvidencia(
+        @RequestParam("archivo") MultipartFile archivo,
+        @RequestParam("idOst") Long idOst,
+        @RequestParam("idTecnico") Long idTecnico,
+        @RequestParam("descripcion") String descripcion
+    ) {
+        try {
+            EvidenciaRequestDTO dto = new EvidenciaRequestDTO();
+            dto.setIdOst(idOst);
+            dto.setIdTecnico(idTecnico);
+            dto.setDescripcion(descripcion);
 
-        evidenciaService.guardarEvidencia(archivo, dto);
-        return ResponseEntity.ok("Evidencia subida correctamente");
-    } catch (Exception e) {
-        e.printStackTrace(); // 👈 importante para ver el error en consola
-        return ResponseEntity
-            .status(HttpStatus.INTERNAL_SERVER_ERROR)
-            .body("Error al guardar evidencia: " + e.getMessage());
+            evidenciaService.guardarEvidencia(archivo, dto);
+            return ResponseEntity.ok("Evidencia subida correctamente");
+        } catch (Exception e) {
+            e.printStackTrace(); // 👈 importante para ver el error en consola
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al guardar evidencia: " + e.getMessage());
+        }
     }
-}
+    
+    @GetMapping("/mis-evidencias/{idOst}/{idTecnico}")
+    public ResponseEntity<List<EvidenciaTecnicaDTO>> getEvidenciasPorOstTecnico(
+        @PathVariable Long idOst,
+        @PathVariable Long idTecnico
+    ) {
+        List<EvidenciaTecnicaDTO> evidencias = evidenciaService.getEvidenciasPorOstTecnico(idOst, idTecnico);
+        return ResponseEntity.ok(evidencias);
+    }
 
 }

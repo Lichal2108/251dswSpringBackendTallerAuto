@@ -162,7 +162,7 @@ public class OstService {
         Direccion direccion = direccionRepository.findById(idDireccion).get();
         if(direccion==null) return new OstResponseDTO();
         
-        Integer idAuto = ostRequestDTO.getIdAuto();
+        Long idAuto = ostRequestDTO.getIdAuto();
         Auto auto = autoRepository.findById(idAuto).get();
         if(auto==null) return new OstResponseDTO();
         

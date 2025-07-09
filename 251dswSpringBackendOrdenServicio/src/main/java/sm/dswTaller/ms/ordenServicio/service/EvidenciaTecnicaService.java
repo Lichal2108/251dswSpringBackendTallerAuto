@@ -1,10 +1,14 @@
 
 package sm.dswTaller.ms.ordenServicio.service;
 
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import sm.dswTaller.ms.ordenServicio.dto.EvidenciaRequestDTO;
+import sm.dswTaller.ms.ordenServicio.dto.EvidenciaTecnicaDTO;
 import sm.dswTaller.ms.ordenServicio.model.EvidenciaTecnica;
 import sm.dswTaller.ms.ordenServicio.model.OstTecnico;
 import sm.dswTaller.ms.ordenServicio.model.OstTecnicoId;
@@ -37,9 +41,24 @@ public class EvidenciaTecnicaService {
             .ostTecnico(ostTecnico)
             .nombreArchivo(nombreArchivo)
             .url(urlArchivo)
+            .fecha(LocalDateTime.now())
             .descripcion(dto.getDescripcion())
             .build();
 
         evidenciaRepo.save(evidencia);
+    }
+    public List<EvidenciaTecnicaDTO> getEvidenciasPorOstTecnico(Long idOst, Long idTecnico) {
+        OstTecnicoId id = new OstTecnicoId(idOst, idTecnico);
+        List<EvidenciaTecnica> evidencias = evidenciaRepo.findByOstTecnico_Id(id);
+
+        return evidencias.stream().map(e -> 
+            EvidenciaTecnicaDTO.builder()
+                .id(e.getId())
+                .nombreArchivo(e.getNombreArchivo())
+                .url(e.getUrl())
+                .descripcion(e.getDescripcion())
+                .fecha(e.getFecha())
+                .build()
+        ).collect(Collectors.toList());
     }
 }

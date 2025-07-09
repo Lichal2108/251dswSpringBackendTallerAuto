@@ -90,7 +90,7 @@ public class AutoController {
        
     }
     @GetMapping("/{id}")
-    public ResponseEntity<?> getAutoById(@PathVariable Integer id) {
+    public ResponseEntity<?> getAutoById(@PathVariable Long id) {
         AutoDTO dto = autoService.getAutoById(id);
         return ResponseEntity.ok(dto);
     }

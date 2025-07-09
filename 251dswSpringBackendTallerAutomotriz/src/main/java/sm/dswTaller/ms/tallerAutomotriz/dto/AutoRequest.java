@@ -11,7 +11,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class AutoRequest {
-    private int idAuto;
+    private Long idAuto;
     private String placa;
     private Integer idModelo;
     private Integer idPersona;

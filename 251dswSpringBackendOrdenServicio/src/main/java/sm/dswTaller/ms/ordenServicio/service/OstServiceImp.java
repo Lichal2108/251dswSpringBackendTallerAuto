@@ -173,27 +173,31 @@ public class OstServiceImp implements OstService{
         throw new UnsupportedOperationException("Not supported yet."); 
     }
     
-    public OstResponseDTO buildResponse(Ost ost) {
-        try {
-            // 1. Obtener AUTO
-            AutoDTO auto = autoClient.getAutoById(ost.getAuto());
-            // 2. Obtener PERSONA del auto
-            //PersonaDTO persona = auto != null ? personaClient.getPersonaById(auto.getPersona().getIdPersona()) : null;
-            // 3. Obtener USUARIOS: recepcionista y supervisor
-            UsuarioDTO recep = ost.getRecepcionista()!= null
+public OstResponseDTO buildResponse(Ost ost) {
+    try {
+        Long idAuto = ost.getAuto();
+
+        if (idAuto == null) {
+            throw new RuntimeException("OST " + ost.getIdOst() + " no tiene ID de auto asociado.");
+        }
+
+        AutoDTO auto = autoClient.getAutoById(idAuto);
+
+        UsuarioDTO recep = ost.getRecepcionista() != null
                 ? usuarioClient.getUsuarioMiniById(ost.getRecepcionista())
                 : null;
-            UsuarioDTO superv = ost.getSupervisor() != null
+
+        UsuarioDTO superv = ost.getSupervisor() != null
                 ? usuarioClient.getUsuarioMiniById(ost.getSupervisor())
                 : null;
-            // 4. Convertir a DTO
-            return OstResponseDTO.fromEntity(ost, auto, auto.getPersona(), recep, superv);
 
-        } catch (Exception e) {
-            // Puedes loggear el error o lanzar una excepción personalizada
-            throw new RuntimeException("Error al construir OstResponseDTO: " + e.getMessage(), e);
-        }
+        return OstResponseDTO.fromEntity(ost, auto, auto.getPersona(), recep, superv);
+
+    } catch (Exception e) {
+        throw new RuntimeException("Error al construir OstResponseDTO para OST " + ost.getIdOst() + ": " + e.getMessage(), e);
     }
+}
+
 
     @Override
     public OstMsResponseDTO insertOst(OstRequestDTO dto) {
