@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioMDTO;
 import sm.dswTaller.ms.tallerAutomotriz.service.UsuarioService;
 import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioResponse;
 import sm.dswTaller.ms.tallerAutomotriz.dto.UsuarioRequest;
@@ -123,6 +124,10 @@ public class UsuarioController {
                     .body(ErrorResponse.builder().message("usuario not found").build());
         return ResponseEntity.ok(usuarioResponse);
     }
+
+    
+
+
     @GetMapping("/{idUsuario}/persona")
     public ResponseEntity<Long> obtenerIdPersonaPorUsuario(@PathVariable Long idUsuario) {
         Long idPersona = usuarioService.obtenerIdPersonaPorUsuario(idUsuario);
@@ -132,4 +137,13 @@ public class UsuarioController {
             return ResponseEntity.notFound().build();
         }
     }
+
+
+
+    @GetMapping("mini/{id}")
+    public ResponseEntity<?> getUsuarioMiniById(@PathVariable Long id){
+        UsuarioMDTO dto = usuarioService.getUsuarioMiniById(id);
+        return ResponseEntity.ok(dto);
+    }
+
 }   

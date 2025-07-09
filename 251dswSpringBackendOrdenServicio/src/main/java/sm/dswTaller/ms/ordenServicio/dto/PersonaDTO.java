@@ -19,6 +19,6 @@ public class PersonaDTO {
     private String apellidoPaterno;
     private String apellidoMaterno;
     private String nroDocumento;
-    private String tipoDocumento;
+    private TipoDocumentoDTO tipoDocumento;
     private String telefono;
 }

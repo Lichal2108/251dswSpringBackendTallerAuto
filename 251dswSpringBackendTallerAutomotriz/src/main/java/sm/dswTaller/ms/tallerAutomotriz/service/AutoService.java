@@ -14,6 +14,7 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sm.dswTaller.ms.tallerAutomotriz.dto.AutoDTO;
 
 @Service
 public class AutoService {
@@ -24,16 +25,17 @@ public class AutoService {
     @Autowired
     PersonaRepository personaRepository;
         
-    public List<AutoResponse> findByPersona(Integer idPersona) {
+    public List<AutoDTO> findByPersona(Integer idPersona) {
         List<Auto> autos = autoRepository.findByPersona_IdPersona(idPersona);
-        //System.out.println(Arrays.toString(autos.toArray()));
+        System.out.println(Arrays.toString(autos.toArray()));
         return autos.stream()
-                 .map(auto -> AutoResponse.builder()
+                 .map(auto -> AutoDTO.builder()
                         .idAuto(auto.getIdAuto())
                         .placa(auto.getPlaca())
-                        .modelo(auto.getModelo())
+                        .modelo(auto.getModelo().getNombre())
                         .anio(auto.getAnio())
                         .color(auto.getColor())
+                        .persona(auto.getPersona())
                         .build()
                 )
                 .collect(Collectors.toList());
@@ -93,4 +95,17 @@ public class AutoService {
         
     }  
 
+    public AutoDTO getAutoById(Integer id) {
+        Optional<Auto> auto = autoRepository.findById(id);
+        if(!auto.isPresent())
+            return null;
+
+        return AutoDTO.builder().
+            idAuto(auto.get().getIdAuto()).
+            placa(auto.get().getPlaca()).
+            anio(auto.get().getAnio()).
+            color(auto.get().getColor()).
+            persona(auto.get().getPersona()).
+            modelo(auto.get().getModelo().getNombre()).build();
+    }
 }

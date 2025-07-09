@@ -37,5 +37,5 @@ public class AutoResponse {
                .map(AutoResponse::fromEntity)
                .collect(Collectors.toList());    
     }
-    
+
 }

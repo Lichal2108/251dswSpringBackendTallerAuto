@@ -8,6 +8,6 @@ import sm.dswTaller.ms.ordenServicio.model.OrdenPreguntaPK;
 
 public interface OrdenPreguntaRepository extends JpaRepository<OrdenPregunta, OrdenPreguntaPK> {
 
-    public void deleteByIdIdOst(int id);
-    List<OrdenPregunta> findByOstIdOst(Integer idOst);
+    public void deleteByIdIdOst(Long id);
+    List<OrdenPregunta> findByOstIdOst(Long idOst);
 }

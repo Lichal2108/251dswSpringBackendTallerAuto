@@ -78,7 +78,7 @@ public class OstResponseDTO {
             .apellidoPaterno(persona.getApellidoPaterno())
             .apellidoMaterno(persona.getApellidoMaterno())
             .nroDocumento(persona.getNroDocumento())
-            .tipoDocumento(persona.getTipoDocumento())
+            .tipoDocumento(persona.getTipoDocumento().getTipoDoc())
             .telefono(persona.getTelefono())
 
             // Usuarios (Recepcionista y Supervisor)

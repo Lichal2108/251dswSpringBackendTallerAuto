@@ -26,7 +26,7 @@ spring:
           predicates:
             - Path=/api/v1/bitacora/**
         - id: categoria-item
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/categoria-item/**
         - id: cotizaciones
@@ -34,15 +34,15 @@ spring:
           predicates:
             - Path=/api/v1/cotizaciones/**
         - id: direccion
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/direccion/**
         - id: inventario-auto
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/inventario-auto/**
         - id: item-inventario
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/item-inventario/**
         - id: marca
@@ -58,11 +58,11 @@ spring:
           predicates:
             - Path=/api/v1/modelo/**
         - id: ost
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/ost/**
         - id: ost-tecnico
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/ost-tecnico/**
         - id: persona
@@ -70,7 +70,7 @@ spring:
           predicates:
             - Path=/api/v1/persona/**
         - id: pregunta
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/pregunta/**
         - id: servicios
@@ -90,7 +90,7 @@ spring:
           predicates:
             - Path=/api/v1/tipoDocumento/**
         - id: tipo-estado
-          uri: 'http://localhost:9090'
+          uri: 'http://localhost:9093'
           predicates:
             - Path=/api/v1/tipo-estado/**
         - id: tipo-solucion

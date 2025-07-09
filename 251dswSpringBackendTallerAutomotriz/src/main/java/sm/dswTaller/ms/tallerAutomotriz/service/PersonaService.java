@@ -82,6 +82,11 @@ public class PersonaService{
         return PersonaResponse.fromEntity(result.get());
         
         
-    }    
+    }
+    public PersonaResponse getPersonaById(Integer id){
+        Optional<Persona> result = personaRepository.findById(id);
+        if (!result.isPresent()) return null;
+        return PersonaResponse.fromEntity(result.get());
+    }
      
 }

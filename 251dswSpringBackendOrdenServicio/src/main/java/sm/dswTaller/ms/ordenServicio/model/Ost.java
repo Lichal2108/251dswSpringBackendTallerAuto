@@ -49,13 +49,13 @@ public class Ost {
     @JoinColumn(name = "id_estado", referencedColumnName = "id_estado")
     private TipoEstado estado;
     
-    @JoinColumn(name = "id_auto", referencedColumnName = "id_auto")
+    @Column(name = "id_auto")
     private Long auto;
     
-    @JoinColumn(name = "id_recepcionista", referencedColumnName = "id_usuario")
+    @Column(name = "id_recepcionista")
     private Long recepcionista;
     
-    @JoinColumn(name = "id_supervisor", referencedColumnName = "id_usuario")
+    @Column(name = "id_supervisor")
     private Long supervisor;
     
 }

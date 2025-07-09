@@ -12,15 +12,21 @@ import sm.dswTaller.ms.ordenServicio.client.PersonaClient;
 import sm.dswTaller.ms.ordenServicio.client.UsuarioClient;
 import sm.dswTaller.ms.ordenServicio.dto.AutoDTO;
 import sm.dswTaller.ms.ordenServicio.dto.InventarioByOstDTO;
+import sm.dswTaller.ms.ordenServicio.dto.OstMsResponseDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstRequestDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstResponseDTO;
 import sm.dswTaller.ms.ordenServicio.dto.PersonaDTO;
 import sm.dswTaller.ms.ordenServicio.dto.UsuarioDTO;
 import sm.dswTaller.ms.ordenServicio.model.Direccion;
+import sm.dswTaller.ms.ordenServicio.model.OrdenPregunta;
+import sm.dswTaller.ms.ordenServicio.model.OrdenPreguntaPK;
 import sm.dswTaller.ms.ordenServicio.model.Ost;
+import sm.dswTaller.ms.ordenServicio.model.Pregunta;
 import sm.dswTaller.ms.ordenServicio.model.TipoEstado;
 import sm.dswTaller.ms.ordenServicio.repository.DireccionRepository;
+import sm.dswTaller.ms.ordenServicio.repository.OrdenPreguntaRepository;
 import sm.dswTaller.ms.ordenServicio.repository.OstRepository;
+import sm.dswTaller.ms.ordenServicio.repository.PreguntaRepository;
 import sm.dswTaller.ms.ordenServicio.repository.TipoEstadoRepository;
 
 /**
@@ -40,11 +46,11 @@ public class OstServiceImp implements OstService{
     
     @Autowired
     private DireccionRepository direccionRepository;
-    /*
-    
     
     @Autowired private OrdenPreguntaRepository ordenPreguntaRepo;
     
+    @Autowired private PreguntaRepository preguntaRepository;
+    /*
     @Autowired
     private ItemInventarioRepository itemInventarioRepository;
     
@@ -156,7 +162,7 @@ public class OstServiceImp implements OstService{
         AutoDTO autoDTO = autoClient.getAutoById(dto.getIdAuto());
         if (autoDTO == null) throw new RuntimeException("Auto no encontrado");
 
-        UsuarioDTO usuarioDTO = usuarioClient.getUsuarioById(dto.getIdRecepcionista());
+        UsuarioDTO usuarioDTO = usuarioClient.getUsuarioMiniById(dto.getIdRecepcionista());
         if (usuarioDTO == null) throw new RuntimeException("Usuario no encontrado");
 
         // 3. Recuperar OST existente
@@ -181,16 +187,13 @@ public class OstServiceImp implements OstService{
     
     @Transactional
     @Override
-    public void deleteOst(int id) {
-        /*        if (!ostRepository.existsById(id)) {
-        throw new RuntimeException("Ost no encontrado");
+    public void deleteOst(Long id) {
+        if (!ostRepository.existsById(id)) {
+            throw new RuntimeException("OST no encontrada con ID: " + id);
         }
-        
-        // Eliminar las relaciones en orden_pregunta
-        ordenPreguntaRepo.deleteByIdIdOst(id);
-        
-        // Luego eliminar la OST
-        ostRepository.deleteById(id);*/
+
+        ordenPreguntaRepo.deleteByIdIdOst(id);  // Borra relaciones
+        ostRepository.deleteById(id);          // Borra la OST
     }
     
     public OstResponseDTO findOst(Long id){
@@ -199,30 +202,26 @@ public class OstServiceImp implements OstService{
             return null;
         return buildResponse(result.get());
     }
-
+    
     @Override
-    public List<OstResponseDTO> obtenerOstPorCliente(Long idUsuario) {
-        // 1. Obtener el usuario desde el microservicio externo
-        UsuarioDTO usuario = usuarioClient.getUsuarioById(idUsuario);
-
-        // 2. Obtener el idPersona desde el UsuarioDTO
-        if (usuario == null || usuario.getPersona() == null) {
-            throw new RuntimeException("Usuario o persona no encontrados");
-        }
+    public List<OstResponseDTO> buscarOstPorIdPersona(Long idUsuario) {
+        UsuarioDTO usuario = usuarioClient.getUsuarioMiniById(idUsuario);
+        //System.out.println("ost1");
         Long idPersona = usuario.getPersona().getIdPersona();
-
-        // 3. Buscar las OSTs por idPersona (asociado al auto)
-        List<Ost> osts = ostRepository.findByIdPersonaCliente(idPersona);
-
-        // 4. Convertir cada una con buildResponse
-        return osts.stream()
-                   .map(this::buildResponse)
-                   .collect(Collectors.toList());
+        //System.out.println("ost2");
+        List<AutoDTO> autos = autoClient.listarAutosPorPersona(idPersona);
+        //System.out.println("ost3");
+        List<Long> idsAuto = autos.stream().map(autoDTO -> autoDTO.getIdAuto()).toList();
+        //System.out.println("rrr");
+        List<Ost> listaOst = ostRepository.findByAutoIn(idsAuto);
+        return listaOst.stream()
+                       .map(this::buildResponse)
+                       .collect(Collectors.toList());
     }
     
     @Override
     public List<OstResponseDTO> obtenerOstPorSupervisor(Long idSupervisor) {
-        List<Ost> osts = ostRepository.findBySupervisorId(idSupervisor);
+        List<Ost> osts = ostRepository.findBySupervisor(idSupervisor);
         return osts.stream()
                    .map(this::buildResponse)  // Usamos el método completo con FeignClients
                    .collect(Collectors.toList());
@@ -263,13 +262,13 @@ public class OstServiceImp implements OstService{
             // 1. Obtener AUTO
             AutoDTO auto = autoClient.getAutoById(ost.getAuto());
             // 2. Obtener PERSONA del auto
-            PersonaDTO persona = auto != null ? personaClient.getPersonaById(auto.getIdPersona()) : null;
+            PersonaDTO persona = auto != null ? personaClient.getPersonaById(auto.getPersona().getIdPersona()) : null;
             // 3. Obtener USUARIOS: recepcionista y supervisor
             UsuarioDTO recep = ost.getRecepcionista()!= null
-                ? usuarioClient.getUsuarioById(ost.getRecepcionista())
+                ? usuarioClient.getUsuarioMiniById(ost.getRecepcionista())
                 : null;
             UsuarioDTO superv = ost.getSupervisor() != null
-                ? usuarioClient.getUsuarioById(ost.getSupervisor())
+                ? usuarioClient.getUsuarioMiniById(ost.getSupervisor())
                 : null;
             // 4. Convertir a DTO
             return OstResponseDTO.fromEntity(ost, auto, persona, recep, superv);
@@ -281,7 +280,46 @@ public class OstServiceImp implements OstService{
     }
 
     @Override
-    public OstResponseDTO insertOst(OstRequestDTO dto) {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    public OstMsResponseDTO insertOst(OstRequestDTO dto) {
+        // Validar existencia de Estado
+        TipoEstado tipoEstado = tipoEstadoRepository.findById(dto.getIdEstado())
+            .orElseThrow(() -> new RuntimeException("Estado no encontrado"));
+
+        // Validar existencia de Dirección
+        Direccion direccion = direccionRepository.findById(dto.getIdDireccion())
+            .orElseThrow(() -> new RuntimeException("Dirección no encontrada"));
+
+        // No se valida Auto, Recepcionista ni Supervisor, solo se guardan los IDs
+        Ost ost = Ost.builder()
+            .fecha(dto.getFecha())
+            .fechaRevision(dto.getFechaRevision())
+            .hora(dto.getHora())
+            .nivelGasolina(dto.getNivelGasolina())
+            .kilometraje(dto.getKilometraje())
+            .direccion(direccion)
+            .estado(tipoEstado)
+            .auto(dto.getIdAuto()) // Se guarda el ID directo
+            .recepcionista(dto.getIdRecepcionista())
+            .supervisor(dto.getIdSupervisor())
+            .build();
+
+        ost = ostRepository.save(ost);
+
+        // Guardar preguntas relacionadas (si hay)
+        for (Integer idPregunta : dto.getPreguntas()) {
+            Pregunta pregunta = preguntaRepository.findById(idPregunta)
+                .orElseThrow(() -> new RuntimeException("Pregunta no encontrada: ID " + idPregunta));
+
+            ordenPreguntaRepo.save(
+                OrdenPregunta.builder()
+                    .id(new OrdenPreguntaPK(ost.getIdOst(), idPregunta))
+                    .ost(ost)
+                    .pregunta(pregunta)
+                    .build()
+            );
+        }
+
+        return OstMsResponseDTO.fromEntity(ost);
     }
+
 }

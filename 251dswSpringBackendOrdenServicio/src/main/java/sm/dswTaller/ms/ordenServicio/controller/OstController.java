@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sm.dswTaller.ms.ordenServicio.dto.InventarioByOstDTO;
+import sm.dswTaller.ms.ordenServicio.dto.OstMsResponseDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstRequestDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstResponseDTO;
 import sm.dswTaller.ms.ordenServicio.service.OstServiceImp;
@@ -41,7 +42,7 @@ public class OstController {
     }
     @GetMapping("/mis-ost/{idUsuario}")
     public ResponseEntity<?> obtenerMisOst(@PathVariable Long idUsuario) {
-        List<OstResponseDTO> lista = ostService.obtenerOstPorCliente(idUsuario);
+        List<OstResponseDTO> lista = ostService.buscarOstPorIdPersona(idUsuario);
         return ResponseEntity.ok(lista);
     }
     
@@ -54,7 +55,7 @@ public class OstController {
     @PostMapping
     public ResponseEntity<?> insertOst(@RequestBody OstRequestDTO ostRequestDTO){
         logger.info(">insert"+ostRequestDTO.toString());
-        OstResponseDTO ostResponseDTO;
+        OstMsResponseDTO ostResponseDTO;
         try{
             ostResponseDTO=ostService.insertOst(ostRequestDTO);
             
@@ -84,9 +85,13 @@ public class OstController {
     }
     
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deleteOst(@PathVariable int id) {
-        ostService.deleteOst(id);
-        return ResponseEntity.noContent().build();
+    public ResponseEntity<?> deleteOst(@PathVariable Long id) {
+        try {
+            ostService.deleteOst(id);
+            return ResponseEntity.ok("OST eliminada correctamente");
+        } catch (RuntimeException e) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
+        }
     }
     /*    @PutMapping("/actualizar-inventario/{idOst}")
     public ResponseEntity<?> actualizarInventario(@PathVariable Integer idOst,
