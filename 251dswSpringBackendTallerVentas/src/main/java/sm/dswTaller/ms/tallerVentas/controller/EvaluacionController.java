@@ -31,9 +31,15 @@ public class EvaluacionController {
                 .orElse(ResponseEntity.notFound().build());
     }
     
-    @PostMapping
-    public ResponseEntity<EvaluacionResponseDTO> createEvaluacion(@RequestBody EvaluacionRequestDTO request) {
-        EvaluacionResponseDTO createdEvaluacion = evaluacionService.createEvaluacion(request);
+    @GetMapping("/encuesta/{idEncuesta}")
+    public ResponseEntity<List<EvaluacionResponseDTO>> getEvaluacionesByEncuesta(@PathVariable Long idEncuesta) {
+        List<EvaluacionResponseDTO> evaluaciones = evaluacionService.getEvaluacionesByIdEncuesta(idEncuesta);
+        return ResponseEntity.ok(evaluaciones);
+    }
+    
+    @PostMapping("/{idEncuesta}")
+    public ResponseEntity<EvaluacionResponseDTO> createEvaluacion(@PathVariable Long idEncuesta, @RequestBody EvaluacionRequestDTO request) {
+        EvaluacionResponseDTO createdEvaluacion = evaluacionService.createEvaluacion(request, idEncuesta);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdEvaluacion);
     }
     

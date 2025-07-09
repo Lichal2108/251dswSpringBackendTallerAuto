@@ -11,10 +11,12 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 public class EncuestaSatisfaccionResponseDTO {
-    private Long idReciboOrdenEvaluacion;
+    private Long idEncuesta;
     private Long idRecibo;
     private Long idCotizacion;
     private List<EvaluacionResponseDTO> evaluaciones;
     private BigDecimal promedioSatisfaccion;
     private String mensaje;
+    private String estadoRecibo;
+    private Long idCliente;
 } 

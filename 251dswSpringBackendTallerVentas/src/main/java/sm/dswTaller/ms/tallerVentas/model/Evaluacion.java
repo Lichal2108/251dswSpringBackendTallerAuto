@@ -20,6 +20,10 @@ public class Evaluacion {
     @Column(name = "id_evaluacion")
     private Long idEvaluacion;
     
+    @Column(name = "id_encuesta", nullable = false)
+    @NotNull(message = "El ID de la encuesta es obligatorio")
+    private Long idEncuesta;
+    
     @Column(name = "id_pregunta", nullable = false)
     @NotNull(message = "El ID de la pregunta es obligatorio")
     private Long idPregunta;

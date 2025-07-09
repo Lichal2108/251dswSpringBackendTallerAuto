@@ -34,6 +34,8 @@ public class CotizacionResponse {
                 .fecha(cotizacion.getFecha())
                 .total(cotizacion.getTotal())
                 .ost(cotizacion.getOst()) // retorna el objeto completo
+                .estado(cotizacion.getEstado().toString())
+                .fechaExpiracion(cotizacion.getFechaExpiracion())
                 .build();
     }
     public static List<CotizacionResponse> fromEntities(List<Cotizacion> cotizaciones) {

@@ -115,14 +115,40 @@ spring:
           uri: 'http://localhost:8091'
           predicates:
             - Path=/api/v2/recibo/**
-        - id: recibo-orden-evaluacion
-          uri: 'http://localhost:8091'
-          predicates:
-            - Path=/api/v2/recibo-orden-evaluacion/**
+
         - id: encuesta-satisfaccion
           uri: 'http://localhost:8091'
           predicates:
             - Path=/api/v2/encuesta-satisfaccion/**
+        
+        - id: dashboard-ventas-por-servicio
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/ventas-por-servicio
+        - id: dashboard-servicios-mas-vendidos-mes
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/servicios-mas-vendidos-mes
+        - id: dashboard-materiales-mas-vendidos-mes
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/materiales-mas-vendidos-mes
+        - id: dashboard-ingresos-por-mes
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/ingresos-por-mes
+        - id: dashboard-ingresos-por-dia
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/ingresos-por-dia
+        - id: dashboard-top-clientes
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/top-clientes
+        - id: dashboard-promedio-satisfaccion-tecnico
+          uri: 'http://localhost:8091'
+          predicates:
+            - Path=/api/v2/dashboard/promedio-satisfaccion-tecnico
         
         # Rutas generales como fallback
         - id: taller-general

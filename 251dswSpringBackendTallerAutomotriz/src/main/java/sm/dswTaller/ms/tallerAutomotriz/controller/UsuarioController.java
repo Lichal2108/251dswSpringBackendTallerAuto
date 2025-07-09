@@ -123,4 +123,13 @@ public class UsuarioController {
                     .body(ErrorResponse.builder().message("usuario not found").build());
         return ResponseEntity.ok(usuarioResponse);
     }
+    @GetMapping("/{idUsuario}/persona")
+    public ResponseEntity<Long> obtenerIdPersonaPorUsuario(@PathVariable Long idUsuario) {
+        Long idPersona = usuarioService.obtenerIdPersonaPorUsuario(idUsuario);
+        if (idPersona != null) {
+            return ResponseEntity.ok(idPersona);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
+    }
 }   
