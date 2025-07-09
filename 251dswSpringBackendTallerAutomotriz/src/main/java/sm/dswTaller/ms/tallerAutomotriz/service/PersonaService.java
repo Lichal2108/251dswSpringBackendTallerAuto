@@ -2,21 +2,27 @@
 package sm.dswTaller.ms.tallerAutomotriz.service;
 
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import sm.dswTaller.ms.tallerAutomotriz.dto.AutoResponse;
 import sm.dswTaller.ms.tallerAutomotriz.dto.PersonaRequest;
 import sm.dswTaller.ms.tallerAutomotriz.dto.PersonaResponse;
+import sm.dswTaller.ms.tallerAutomotriz.model.Auto;
 import sm.dswTaller.ms.tallerAutomotriz.model.Persona;
 import sm.dswTaller.ms.tallerAutomotriz.model.TipoDocumento;
+import sm.dswTaller.ms.tallerAutomotriz.reporistory.AutoRepository;
 import sm.dswTaller.ms.tallerAutomotriz.reporistory.PersonaRepository;
 import sm.dswTaller.ms.tallerAutomotriz.reporistory.TipoDocumentoRepository;
 
 
 @Service
 public class PersonaService{
-
+    @Autowired
+    private AutoRepository autoRepository;
     @Autowired
     PersonaRepository personaRepository;
     @Autowired
@@ -88,5 +94,20 @@ public class PersonaService{
         if (!result.isPresent()) return null;
         return PersonaResponse.fromEntity(result.get());
     }
-     
+    
+        public List<AutoResponse> findByPersona(Integer idPersona) {
+        List<Auto> autos = autoRepository.findByPersona_IdPersona(idPersona);
+        System.out.println(Arrays.toString(autos.toArray()));
+        return autos.stream()
+                 .map(auto -> AutoResponse.builder()
+                        .idAuto(auto.getIdAuto())
+                        .placa(auto.getPlaca())
+                        .modelo(auto.getModelo())
+                        .anio(auto.getAnio())
+                        .color(auto.getColor())
+                        .persona(auto.getPersona())
+                        .build()
+                )
+                .collect(Collectors.toList());
+    }
 }

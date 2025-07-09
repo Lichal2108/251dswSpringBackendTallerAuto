@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import sm.dswTaller.ms.ordenServicio.dto.InventarioByOstDTO;
 import sm.dswTaller.ms.ordenServicio.dto.OstMsResponseDTO;
@@ -92,6 +93,14 @@ public class OstController {
         } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(e.getMessage());
         }
+    }
+    
+    @PutMapping("/api/v1/ost/{id}/estado")
+    public ResponseEntity<?> actualizarEstado(
+            @PathVariable Long id,
+            @RequestParam Integer idEstado) {
+        ostService.actualizarEstado(id, idEstado);
+        return ResponseEntity.ok().build();
     }
     /*    @PutMapping("/actualizar-inventario/{idOst}")
     public ResponseEntity<?> actualizarInventario(@PathVariable Integer idOst,

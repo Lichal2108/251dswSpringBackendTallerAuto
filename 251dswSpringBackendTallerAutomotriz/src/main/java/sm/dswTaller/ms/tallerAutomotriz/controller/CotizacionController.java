@@ -5,6 +5,7 @@
 package sm.dswTaller.ms.tallerAutomotriz.controller;
 
 
+import static io.swagger.v3.core.util.Json.mapper;
 import java.util.List;
 import java.util.Map;
 import java.util.HashMap;
@@ -37,6 +38,8 @@ import sm.dswTaller.ms.tallerAutomotriz.dto.ActualizarTotalCotizacionRequest;
 import sm.dswTaller.ms.tallerAutomotriz.dto.MaterialConCantidadResponse;
 import sm.dswTaller.ms.tallerAutomotriz.reporistory.CotizacionRepository;
 import java.time.LocalDateTime;
+import java.util.Optional;
+import sm.dswTaller.ms.tallerAutomotriz.model.Cotizacion;
 import sm.dswTaller.ms.tallerAutomotriz.utils.EstadoCotizacion;
 
 @RestController
@@ -343,5 +346,22 @@ public class CotizacionController {
                             .message("Error al obtener estado de la cotización: " + e.getMessage())
                             .build());
         }
+    }
+    
+    @GetMapping("/por-ost/{idOst}")
+    public ResponseEntity<?> obtenerCotizacionPorOst(@PathVariable Integer idOst) {
+        Optional<Cotizacion> cotizacion = null;
+        try {
+            cotizacion = cotizacionRepository.findByOstIdOst(idOst);
+        } catch (Exception e) {
+            logger.error("Error inesperado al buscar ost", e);
+            return new ResponseEntity<>(null, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+
+        if (cotizacion.isEmpty()) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND)
+                    .body(ErrorResponse.builder().message("cotizaciones not found").build());
+        }
+        return ResponseEntity.ok(CotizacionResponse.fromEntity(cotizacion.get()));
     }
 }

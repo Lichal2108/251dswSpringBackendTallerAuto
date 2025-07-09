@@ -128,7 +128,7 @@ public class PersonaController {
     
     @GetMapping("/autos/persona/{idPersona}")
     public List<AutoResponse> getAutosPorPersona(@PathVariable Integer idPersona) {
-        return autoService.findByPersona(idPersona);
+        return personaService.findByPersona(idPersona);
     }
     
     @GetMapping("/{id}")

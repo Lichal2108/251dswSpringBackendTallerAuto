@@ -10,5 +10,7 @@ import sm.dswTaller.ms.ordenServicio.model.TipoEstado;
  */
 @Repository
 public interface TipoEstadoRepository extends JpaRepository<TipoEstado, Integer> {
+
+    public TipoEstado findByEstadoIgnoreCase(String atendida);
     
 }

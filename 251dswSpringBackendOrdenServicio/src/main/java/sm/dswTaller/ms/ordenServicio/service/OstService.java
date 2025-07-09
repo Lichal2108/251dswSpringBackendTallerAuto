@@ -18,5 +18,6 @@ public interface OstService {
     void deleteOst(Long id);
     List<OstResponseDTO> buscarOstPorIdPersona(Long idUsuario);
     List<OstResponseDTO> obtenerOstPorSupervisor(Long idSupervisor);
+    void actualizarEstado(Long idOst, Integer idEstado);
     //void actualizarInventarioYRevision(Integer idOst, InventarioRevisionDTO dto);
 }

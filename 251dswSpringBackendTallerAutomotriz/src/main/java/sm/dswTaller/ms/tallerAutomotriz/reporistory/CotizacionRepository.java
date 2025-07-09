@@ -11,6 +11,7 @@ import sm.dswTaller.ms.tallerAutomotriz.utils.EstadoCotizacion;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -23,5 +24,7 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion,Long>{
             LocalDateTime fecha);
 
     List<Cotizacion> findByEstado(EstadoCotizacion estado);
+
+    public Optional<Cotizacion> findByOstIdOst(Integer idOst);
 
 }
