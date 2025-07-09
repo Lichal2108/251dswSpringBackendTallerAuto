@@ -6,6 +6,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import sm.dswTaller.ms.tallerVentas.dto.ReciboRequestDTO;
 import sm.dswTaller.ms.tallerVentas.dto.ReciboResponseDTO;
+import sm.dswTaller.ms.tallerVentas.dto.ReciboClienteDTO;
+import sm.dswTaller.ms.tallerVentas.dto.DetalleReciboDTO;
+import sm.dswTaller.ms.tallerVentas.dto.*;
 import sm.dswTaller.ms.tallerVentas.service.ReciboService;
 
 import java.util.List;
@@ -66,5 +69,46 @@ public class ReciboController {
     public ResponseEntity<Boolean> verificarReciboListoParaEvaluacion(@PathVariable Long id) {
         boolean listo = reciboService.verificarReciboListoParaEvaluacion(id);
         return ResponseEntity.ok(listo);
+    }
+    
+    @GetMapping("/cliente/{idCliente}")
+    public ResponseEntity<List<ReciboClienteDTO>> obtenerRecibosPorCliente(@PathVariable Long idCliente) {
+        try {
+            List<ReciboClienteDTO> recibos = reciboService.obtenerRecibosPorCliente(idCliente);
+            return ResponseEntity.ok(recibos);
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @GetMapping("/{idRecibo}/detalle")
+    public ResponseEntity<DetalleReciboDTO> obtenerDetalleRecibo(@PathVariable Long idRecibo) {
+        try {
+            DetalleReciboDTO recibo = reciboService.obtenerDetalleRecibo(idRecibo);
+            if (recibo != null) {
+                return ResponseEntity.ok(recibo);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
+    }
+    
+    @GetMapping("/{idRecibo}/descargar")
+    public ResponseEntity<byte[]> descargarRecibo(@PathVariable Long idRecibo) {
+        try {
+            byte[] pdfBytes = reciboService.generarPDFRecibo(idRecibo);
+            if (pdfBytes != null) {
+                return ResponseEntity.ok()
+                    .header("Content-Disposition", "attachment; filename=recibo-" + idRecibo + ".pdf")
+                    .header("Content-Type", "application/pdf")
+                    .body(pdfBytes);
+            } else {
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
+        }
     }
 }

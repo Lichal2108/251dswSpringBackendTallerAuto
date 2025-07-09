@@ -84,6 +84,8 @@ public class AuthService {
         }
         
         Persona persona = usuario.getPersona();
+        String rolRaw = usuario.getRol().getRol();
+        String rolMapped = (rolRaw.equalsIgnoreCase("admin") || rolRaw.equalsIgnoreCase("administrador")) ? "admin" : rolRaw.toLowerCase();
         UsuarioLoginDTO dto = UsuarioLoginDTO.builder()
             .id(usuario.getId())
             .nombreUsuario(usuario.getNombreUsuario())
@@ -91,7 +93,7 @@ public class AuthService {
             .telefono(persona.getTelefono())
             .nroDocumento(persona.getNroDocumento())
             .tipoDocumento(persona.getTipoDocumento().getTipoDoc())
-            .rol(usuario.getRol().getRol())
+            .rol(rolMapped)
             .build();
         
         String token = jwtService.generateToken(usuario);

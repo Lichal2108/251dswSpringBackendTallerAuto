@@ -33,7 +33,13 @@ public class EvaluacionService {
                 .map(this::convertToResponse);
     }
     
-    public EvaluacionResponseDTO createEvaluacion(EvaluacionRequestDTO request) {
+    public List<EvaluacionResponseDTO> getEvaluacionesByIdEncuesta(Long idEncuesta) {
+        return evaluacionRepository.findByIdEncuesta(idEncuesta).stream()
+                .map(this::convertToResponse)
+                .collect(Collectors.toList());
+    }
+    
+    public EvaluacionResponseDTO createEvaluacion(EvaluacionRequestDTO request, Long idEncuesta) {
         // Validar que el puntaje esté entre 1 y 5
         if (request.getPuntajeSatisfaccion() < 1 || request.getPuntajeSatisfaccion() > 5) {
             throw new IllegalArgumentException("El puntaje de satisfacción debe estar entre 1 y 5");
@@ -45,6 +51,7 @@ public class EvaluacionService {
         }
         
         Evaluacion evaluacion = new Evaluacion();
+        evaluacion.setIdEncuesta(idEncuesta);
         evaluacion.setIdPregunta(request.getIdPregunta());
         evaluacion.setPuntajeSatisfaccion(request.getPuntajeSatisfaccion());
         evaluacion.setComentario(request.getComentario());
@@ -88,6 +95,7 @@ public class EvaluacionService {
         
         return new EvaluacionResponseDTO(
                 evaluacion.getIdEvaluacion(),
+                evaluacion.getIdEncuesta(),
                 evaluacion.getIdPregunta(),
                 pregunta,
                 evaluacion.getPuntajeSatisfaccion(),

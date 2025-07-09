@@ -103,4 +103,11 @@ public class UsuarioService {
             .build();
     }   
     
+    public Long obtenerIdPersonaPorUsuario(Long idUsuario) {
+        Optional<Usuario> usuarioOpt = usuarioRepository.findById(idUsuario);
+        if (usuarioOpt.isPresent() && usuarioOpt.get().getPersona() != null) {
+            return Long.valueOf(usuarioOpt.get().getPersona().getIdPersona());
+        }
+        return null;
+    }
 }

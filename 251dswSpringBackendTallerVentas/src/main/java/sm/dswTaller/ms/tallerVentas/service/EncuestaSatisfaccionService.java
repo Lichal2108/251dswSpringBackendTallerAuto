@@ -4,15 +4,17 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import sm.dswTaller.ms.tallerVentas.dto.*;
+import sm.dswTaller.ms.tallerVentas.model.Encuesta;
 import sm.dswTaller.ms.tallerVentas.model.Evaluacion;
-import sm.dswTaller.ms.tallerVentas.model.ReciboOrdenEvaluacion;
+import sm.dswTaller.ms.tallerVentas.model.Recibo;
+import sm.dswTaller.ms.tallerVentas.repository.EncuestaRepository;
 import sm.dswTaller.ms.tallerVentas.repository.EvaluacionRepository;
-import sm.dswTaller.ms.tallerVentas.repository.ReciboOrdenEvaluacionRepository;
 import sm.dswTaller.ms.tallerVentas.repository.ReciboRepository;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -22,16 +24,13 @@ public class EncuestaSatisfaccionService {
     private EvaluacionService evaluacionService;
     
     @Autowired
-    private ReciboOrdenEvaluacionService reciboOrdenEvaluacionService;
+    private EncuestaService encuestaService;
     
     @Autowired
     private ReciboRepository reciboRepository;
     
     @Autowired
     private EvaluacionRepository evaluacionRepository;
-    
-    @Autowired
-    private ReciboOrdenEvaluacionRepository reciboOrdenEvaluacionRepository;
     
     @Transactional
     public EncuestaSatisfaccionResponseDTO procesarEncuestaSatisfaccion(EncuestaSatisfaccionRequestDTO request) {
@@ -45,34 +44,40 @@ public class EncuestaSatisfaccionService {
             throw new IllegalArgumentException("Debe incluir al menos una evaluación");
         }
         
-        // Crear todas las evaluaciones
+        // Crear la encuesta principal
+        Encuesta encuesta = new Encuesta();
+        encuesta.setIdRecibo(request.getIdRecibo());
+        encuesta.setIdCotizacion(request.getIdCotizacion());
+        encuesta.setComentarioGeneral("Encuesta de satisfacción completada");
+        
+        Encuesta encuestaGuardada = encuestaService.createEncuesta(encuesta);
+        
+        // Crear todas las evaluaciones asociadas a la encuesta
         List<EvaluacionResponseDTO> evaluacionesCreadas = request.getEvaluaciones().stream()
-                .map(evaluacionService::createEvaluacion)
+                .map(evaluacionRequest -> evaluacionService.createEvaluacion(evaluacionRequest, encuestaGuardada.getIdEncuesta()))
                 .collect(Collectors.toList());
         
         // Calcular promedio de satisfacción
         BigDecimal promedioSatisfaccion = calcularPromedioSatisfaccion(evaluacionesCreadas);
         
-        // Crear la relación recibo-orden-evaluación
-        // Por simplicidad, usamos la primera evaluación como representativa
-        // En un caso real, podrías querer crear múltiples registros o una estructura diferente
-        Long idEvaluacion = evaluacionesCreadas.get(0).getIdEvaluacion();
-        
-        ReciboOrdenEvaluacionRequestDTO reciboOrdenEvaluacionRequest = new ReciboOrdenEvaluacionRequestDTO(
-                request.getIdRecibo(),
-                request.getIdCotizacion(),
-                idEvaluacion
-        );
-        
-        ReciboOrdenEvaluacionResponseDTO reciboOrdenEvaluacion = reciboOrdenEvaluacionService.createReciboOrdenEvaluacion(reciboOrdenEvaluacionRequest);
+        // Actualizar la encuesta con el promedio
+        encuestaGuardada.setPromedioSatisfaccion(promedioSatisfaccion.doubleValue());
+        encuestaService.updateEncuesta(encuestaGuardada);
+
+        // Cambiar el estado del recibo a 'ENCUESTA REALIZADA'
+        Recibo recibo = reciboRepository.findById(request.getIdRecibo()).orElseThrow(() -> new IllegalArgumentException("El recibo especificado no existe"));
+        recibo.setEstadoRecibo("ENCUESTA REALIZADA");
+        reciboRepository.save(recibo);
         
         return new EncuestaSatisfaccionResponseDTO(
-                reciboOrdenEvaluacion.getId(),
+                encuestaGuardada.getIdEncuesta(),
                 request.getIdRecibo(),
                 request.getIdCotizacion(),
                 evaluacionesCreadas,
                 promedioSatisfaccion,
-                "Encuesta de satisfacción procesada exitosamente"
+                "Encuesta de satisfacción procesada exitosamente",
+                recibo.getEstadoRecibo(),
+                recibo.getIdCliente()
         );
     }
     
@@ -92,29 +97,96 @@ public class EncuestaSatisfaccionService {
     }
     
     public EncuestaSatisfaccionResponseDTO obtenerEncuestaPorRecibo(Long idRecibo) {
-        // Buscar la relación recibo-orden-evaluación
-        List<ReciboOrdenEvaluacion> relaciones = reciboOrdenEvaluacionRepository.findByIdRecibo(idRecibo);
+        // Buscar la encuesta por ID de recibo
+        Optional<Encuesta> encuestaOpt = encuestaService.getEncuestaByIdRecibo(idRecibo);
         
-        if (relaciones.isEmpty()) {
+        if (encuestaOpt.isEmpty()) {
             throw new IllegalArgumentException("No se encontró encuesta para el recibo especificado");
         }
         
-        // Obtener todas las evaluaciones relacionadas
-        List<EvaluacionResponseDTO> evaluaciones = relaciones.stream()
-                .map(relacion -> evaluacionService.getEvaluacionById(relacion.getIdEvaluacion()))
-                .filter(java.util.Optional::isPresent)
-                .map(java.util.Optional::get)
-                .collect(Collectors.toList());
+        Encuesta encuesta = encuestaOpt.get();
         
-        BigDecimal promedioSatisfaccion = calcularPromedioSatisfaccion(evaluaciones);
+        // Obtener todas las evaluaciones de la encuesta
+        List<EvaluacionResponseDTO> evaluaciones = evaluacionService.getEvaluacionesByIdEncuesta(encuesta.getIdEncuesta());
+        
+        BigDecimal promedioSatisfaccion = BigDecimal.valueOf(encuesta.getPromedioSatisfaccion());
+        Recibo recibo = reciboRepository.findById(idRecibo).orElse(null);
+        String estadoRecibo = recibo != null ? recibo.getEstadoRecibo() : null;
+        Long idCliente = recibo != null ? recibo.getIdCliente() : null;
         
         return new EncuestaSatisfaccionResponseDTO(
-                relaciones.get(0).getId(),
+                encuesta.getIdEncuesta(),
                 idRecibo,
-                relaciones.get(0).getIdCotizacion(),
+                encuesta.getIdCotizacion(),
                 evaluaciones,
                 promedioSatisfaccion,
-                "Encuesta de satisfacción recuperada exitosamente"
+                "Encuesta de satisfacción recuperada exitosamente",
+                estadoRecibo,
+                idCliente
         );
+    }
+    
+    public boolean verificarEncuestaRecibo(Long idRecibo) {
+        return encuestaService.existsByIdRecibo(idRecibo);
+    }
+    
+    public List<EncuestaSatisfaccionResponseDTO> obtenerTodasLasEncuestas() {
+        List<Encuesta> todasLasEncuestas = encuestaService.getAllEncuestas();
+        
+        return todasLasEncuestas.stream()
+                .map(encuesta -> {
+                    try {
+                        EncuestaSatisfaccionResponseDTO encuestaResponse = obtenerEncuestaPorRecibo(encuesta.getIdRecibo());
+                        // Filtrar solo si el recibo está en estado 'ENCUESTA REALIZADA'
+                        Recibo recibo = reciboRepository.findById(encuestaResponse.getIdRecibo()).orElse(null);
+                        if (recibo != null && "ENCUESTA REALIZADA".equals(recibo.getEstadoRecibo())) {
+                            return encuestaResponse;
+                        } else {
+                            return null;
+                        }
+                    } catch (Exception e) {
+                        return null;
+                    }
+                })
+                .filter(encuesta -> encuesta != null)
+                .collect(Collectors.toList());
+    }
+    
+    public List<EncuestaSatisfaccionResponseDTO> obtenerEncuestasPorCliente(Long idCliente) {
+        // Filtrar por cliente y estado 'ENCUESTA REALIZADA'
+        List<Recibo> recibosCliente = reciboRepository.findByIdCliente(idCliente);
+        List<Long> idsRecibosRealizada = recibosCliente.stream()
+                .filter(r -> "ENCUESTA REALIZADA".equals(r.getEstadoRecibo()))
+                .map(Recibo::getIdRecibo)
+                .collect(Collectors.toList());
+        return obtenerTodasLasEncuestas().stream()
+                .filter(encuesta -> idsRecibosRealizada.contains(encuesta.getIdRecibo()))
+                .collect(Collectors.toList());
+    }
+    
+    public List<CotizacionPendienteEncuestaDTO> obtenerCotizacionesPendientesEncuesta(Long idCliente) {
+        // Obtener todos los recibos del cliente que no tienen encuesta
+        List<Recibo> recibosCliente = reciboRepository.findByIdCliente(idCliente);
+        
+        return recibosCliente.stream()
+                .filter(recibo -> "ACTIVO".equals(recibo.getEstadoRecibo()))
+                .filter(recibo -> !encuestaService.existsByIdRecibo(recibo.getIdRecibo()))
+                .map(recibo -> {
+                    return new CotizacionPendienteEncuestaDTO(
+                            recibo.getIdRecibo(),
+                            recibo.getIdCotizacion(),
+                            recibo.getFecha().atStartOfDay(), // Convertir LocalDate a LocalDateTime
+                            "Servicio automotriz - " + recibo.getObservaciones(),
+                            recibo.getMontoTotal(),
+                            idCliente,
+                            recibo.getNombreCliente(),
+                            recibo.getPlacaAuto(),
+                            recibo.getMarcaAuto(),
+                            recibo.getModeloAuto() + " " + recibo.getAnioAuto(),
+                            recibo.getEstadoRecibo(),
+                            recibo.getFechaCreacion().plusDays(30) // Fecha de vencimiento
+                    );
+                })
+                .collect(Collectors.toList());
     }
 } 
